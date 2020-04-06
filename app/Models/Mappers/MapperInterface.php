@@ -17,7 +17,7 @@ interface MapperInterface
      * @param Model $model
      * @return Model
      */
-    public function toEntity(Model $model);
+    public function toEntity(Model $model, AbstractEntity $entity);
 
     /**
      * Map an array of models to an array of entities
@@ -33,5 +33,5 @@ interface MapperInterface
      * @param AbstractEntity $entity
      * @return Model
      */
-    public function toModel(AbstractEntity $entity): Model;
+    public function toModel(AbstractEntity $entity, Model $model): Model;
 }

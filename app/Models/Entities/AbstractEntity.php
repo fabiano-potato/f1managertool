@@ -2,7 +2,7 @@
 
 namespace App\Models\Entities;
 
-class AbstractEntity
+abstract class AbstractEntity
 {
     /**
      * Update this entity's data from array using setter methods.

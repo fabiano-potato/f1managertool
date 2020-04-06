@@ -40,9 +40,19 @@ class CarComponentEntity extends AbstractEntity
     protected $_name = null;
 
     /**
+     * @var string the timestamp for when this instance was saved
+     */
+    protected $_createdAt = null;
+
+    /**
+     * @var string the timestamp for when this instance was last saved
+     */
+    protected $_updatedAt = null;
+
+    /**
      * @return int
      */
-    public function getCarComponentId()
+    public function getCarComponentId(): ?int
     {
         return $this->_carComponentId;
     }
@@ -60,7 +70,7 @@ class CarComponentEntity extends AbstractEntity
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->_name;
     }
@@ -78,16 +88,54 @@ class CarComponentEntity extends AbstractEntity
     /**
      * @return int
      */
-    public function getType()
+    public function getType(): ?int
     {
         return $this->_type;
     }
 
     /**
      * @param int $type
+     * @return CarComponentEntity
      */
     public function setType(int $type)
     {
         $this->_type = $type;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCreatedAt(): ?string
+    {
+        return $this->_createdAt;
+    }
+
+    /**
+     * @param string $createdAt
+     * @return CarComponentEntity
+     */
+    public function setCreatedAt(string $createdAt)
+    {
+        $this->_createdAt = $createdAt;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUpdatedAt(): ?string
+    {
+        return $this->_updatedAt;
+    }
+
+    /**
+     * @param string $updatedAt
+     * @return CarComponentEntity
+     */
+    public function setUpdatedAt(string $updatedAt)
+    {
+        $this->_updatedAt = $updatedAt;
+        return $this;
     }
 }

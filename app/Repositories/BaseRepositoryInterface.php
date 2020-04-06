@@ -32,5 +32,5 @@ interface BaseRepositoryInterface
      * @param AbstractEntity $entity
      * @return bool
      */
-    public function create($entity): bool;
+    public function create(&$entity): bool;
 }
