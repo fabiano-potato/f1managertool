@@ -15,9 +15,10 @@ interface MapperInterface
      * Map the Eloquent model to it's entity
      *
      * @param Model $model
-     * @return Model
+     * @param AbstractEntity $entity
+     * @return AbstractEntity
      */
-    public function toEntity(Model $model);
+    public function toEntity(Model $model, AbstractEntity $entity);
 
     /**
      * Map an array of models to an array of entities
@@ -33,5 +34,5 @@ interface MapperInterface
      * @param AbstractEntity $entity
      * @return Model
      */
-    public function toModel(AbstractEntity $entity): Model;
+    public function toModel(AbstractEntity $entity, Model $model): Model;
 }
