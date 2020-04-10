@@ -6,7 +6,7 @@ namespace App\Models\Entities;
  * Class CarComponentLevelEntity
  * @package App\Models\Entities
  */
-class CarComponentLevelEntity extends AbstractEntity
+final class CarComponentLevelEntity extends AbstractEntity
 {
     /**
      * @var int the id for this entity
@@ -68,6 +68,11 @@ class CarComponentLevelEntity extends AbstractEntity
     protected $_updatedAt = null;
 
     /**
+     * @var null|CarComponentLevelEntity
+     */
+    protected $_carComponentEntity = null;
+
+    /**
      * @return int
      */
     public function getCarComponentLevelId()
@@ -79,7 +84,7 @@ class CarComponentLevelEntity extends AbstractEntity
      * @param int $carComponentLevelId
      * @return CarComponentLevelEntity
      */
-    public function setCarComponentLevelId(int $carComponentLevelId)
+    public function setCarComponentLevelId(int $carComponentLevelId): self
     {
         $this->_carComponentLevelId = $carComponentLevelId;
         return $this;
@@ -114,9 +119,10 @@ class CarComponentLevelEntity extends AbstractEntity
     /**
      * @param int $level
      */
-    public function setLevel(int $level)
+    public function setLevel(int $level): self
     {
         $this->_level = $level;
+        return $this;
     }
 
     /**
@@ -129,10 +135,12 @@ class CarComponentLevelEntity extends AbstractEntity
 
     /**
      * @param float $upgradeCost
+     * @return CarComponentLevelEntity
      */
-    public function setUpgradeCost(float $upgradeCost)
+    public function setUpgradeCost(float $upgradeCost): self
     {
         $this->_upgradeCost = $upgradeCost;
+        return $this;
     }
 
     /**
@@ -145,10 +153,12 @@ class CarComponentLevelEntity extends AbstractEntity
 
     /**
      * @param int $statPower
+     * @return CarComponentLevelEntity
      */
-    public function setStatPower(int $statPower)
+    public function setStatPower(int $statPower): self
     {
         $this->_statPower = $statPower;
+        return $this;
     }
 
     /**
@@ -161,10 +171,12 @@ class CarComponentLevelEntity extends AbstractEntity
 
     /**
      * @param int $statAero
+     * @return CarComponentLevelEntity
      */
-    public function setStatAero(int $statAero)
+    public function setStatAero(int $statAero): self
     {
         $this->_statAero = $statAero;
+        return $this;
     }
 
     /**
@@ -273,5 +285,23 @@ class CarComponentLevelEntity extends AbstractEntity
     {
         $this->_updatedAt = $updatedAt;
         return $this;
+    }
+
+    /**
+     * Get the parent Car Component Entity for this instance
+     *
+     * @return CarComponentEntity
+     */
+    public function getCarComponentEntity(): ?CarComponentEntity
+    {
+        return $this->_carComponentEntity;
+    }
+
+    /**
+     * @param CarComponentEntity $carComponentEntity
+     */
+    public function setCarComponentEntity(?CarComponentEntity $carComponentEntity): void
+    {
+        $this->_carComponentEntity = $carComponentEntity;
     }
 }

@@ -2,7 +2,8 @@
 
 namespace App\Models\Mappers\Eloquent;
 
-use App\Models\Mappers\CarComponentLevelMapperInterface;
+use App\Models\Eloquent\EloquentCarComponentLevelModel;
+use App\Models\Entities\CarComponentLevelEntity;
 
 /**
  * Class CarComponentLevelMapper
@@ -10,7 +11,7 @@ use App\Models\Mappers\CarComponentLevelMapperInterface;
  *
  * @package App\Models\Eloquent\Mappers
  */
-class CarComponentLevelMapper extends AbstractEloquentMapper implements CarComponentLevelMapperInterface
+class CarComponentLevelMapper extends AbstractEloquentMapper
 {
     /**
      * A map of Entity property names to model property names
@@ -31,4 +32,19 @@ class CarComponentLevelMapper extends AbstractEloquentMapper implements CarCompo
         'createdAt' => 'created_at',
         'updateAt' => 'updated_at',
     ];
+
+    /**
+     * Map the model to entity
+     *
+     * @param EloquentCarComponentLevelModel $model
+     * @param CarComponentLevelEntity|null $entity
+     * @return CarComponentLevelEntity
+     */
+    public function toEntity(EloquentCarComponentLevelModel $model, CarComponentLevelEntity $entity = null): CarComponentLevelEntity
+    {
+        if (!$entity) {
+            $entity = new CarComponentLevelEntity();
+        }
+        return parent::_toEntity($model, $entity);
+    }
 }
