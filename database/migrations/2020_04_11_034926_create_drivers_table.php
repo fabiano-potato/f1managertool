@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCarComponentsTable extends Migration
+class CreateDriversTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateCarComponentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('car_components', function (Blueprint $table) {
-            $table->id('car_component_id');
-            $table->unsignedSmallInteger('type');
+        Schema::create('drivers', function (Blueprint $table) {
+            $table->id('driver_id');
             $table->string('name');
             $table->timestamps();
-            $table->unique(['type', 'name']);
+            $table->unique('name');
         });
     }
 
@@ -29,6 +28,6 @@ class CreateCarComponentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('car_components');
+        Schema::dropIfExists('drivers');
     }
 }

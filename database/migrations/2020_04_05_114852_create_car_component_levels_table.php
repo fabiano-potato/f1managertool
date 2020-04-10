@@ -15,15 +15,15 @@ class CreateCarComponentLevelsTable extends Migration
     {
         Schema::create('car_component_levels', function (Blueprint $table) {
             $table->id('car_component_level_id');
-            $table->bigInteger('car_component_id');
-            $table->smallInteger('level');
-            $table->integer('upgrade_cost');
-            $table->smallInteger('stat_power');
-            $table->smallInteger('stat_aero');
-            $table->smallInteger('stat_grip');
-            $table->smallInteger('stat_reliability');
+            $table->unsignedBigInteger('car_component_id');
+            $table->unsignedSmallInteger('level');
+            $table->unsignedMediumInteger('upgrade_cost');
+            $table->unsignedSmallInteger('stat_power');
+            $table->unsignedSmallInteger('stat_aero');
+            $table->unsignedSmallInteger('stat_grip');
+            $table->unsignedSmallInteger('stat_reliability');
             $table->decimal('stat_pit_stop', 5, 2);
-            $table->smallInteger('required_upgrade_points');
+            $table->unsignedMediumInteger('required_upgrade_points');
             $table->timestamps();
         });
     }
