@@ -45,6 +45,21 @@ class CarComponentLevelMapper extends AbstractEloquentMapper
         if (!$entity) {
             $entity = new CarComponentLevelEntity();
         }
-        return parent::_toEntity($model, $entity);
+        /* @var CarComponentLevelEntity $entity */
+        $entity = parent::_toEntity($model, $entity);
+        return $entity;
+    }
+
+    /**
+     * Map a CarComponentLevelEntity to a EloquentCarComponentLevelModel
+     *
+     * @param CarComponentLevelEntity $entity
+     * @return EloquentCarComponentLevelModel
+     */
+    public function toModel(CarComponentLevelEntity $entity): EloquentCarComponentLevelModel
+    {
+        /* @var EloquentCarComponentLevelModel $model */
+        $model = parent::_toModel($entity, new EloquentCarComponentLevelModel());
+        return $model;
     }
 }

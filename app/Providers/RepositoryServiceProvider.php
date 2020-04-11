@@ -6,6 +6,7 @@ use App\Contracts\Repositories\CarComponentRepositoryInterface;
 use App\Repositories\Eloquent\CarComponentLevelRepository;
 use App\Contracts\Repositories\CarComponentLevelRepositoryInterface;
 use App\Repositories\Eloquent\CarComponentRepository;
+use App\Repositories\Eloquent\UserCarComponentRepository;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -23,5 +24,6 @@ class RepositoryServiceProvider extends ServiceProvider
         // Facade bindings
         'CarComponent' => CarComponentRepository::class,
         'CarComponentLevel' => CarComponentLevelRepository::class,
+        'UserCarComponent' => UserCarComponentRepository::class,
     ];
 }

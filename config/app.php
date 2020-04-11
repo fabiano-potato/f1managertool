@@ -230,6 +230,7 @@ return [
 
         'CarComponent' => App\Facades\CarComponent::class,
         'CarComponentLevel' => App\Facades\CarComponentLevel::class,
+        'UserCarComponent' => App\Facades\UserCarComponent::class,
     ],
 
 ];

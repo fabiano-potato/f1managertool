@@ -47,7 +47,7 @@ abstract class AbstractEloquentMapper
      * @param Model $model
      * @return Model
      */
-    public function toModel(AbstractEntity $entity, Model $model): Model
+    protected function _toModel(AbstractEntity $entity, Model $model): Model
     {
         foreach (static::$_entityModelPropertyMap as $entityProp => $modelProp)
         {

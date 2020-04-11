@@ -38,6 +38,21 @@ class CarComponentMapper extends AbstractEloquentMapper
         if (!$entity) {
             $entity = new CarComponentEntity();
         }
-        return parent::_toEntity($model, $entity);
+        /* @var CarComponentEntity $entity */
+        $entity = parent::_toEntity($model, $entity);
+        return $entity;
+    }
+
+    /**
+     * Map a CarComponentEntity to a EloquentCarComponentModel
+     *
+     * @param CarComponentEntity $entity
+     * @return EloquentCarComponentModel
+     */
+    public function toModel(CarComponentEntity $entity): EloquentCarComponentModel
+    {
+        /* @var EloquentCarComponentModel $model */
+        $model = parent::_toModel($entity, new EloquentCarComponentModel());
+        return $model;
     }
 }
