@@ -46,7 +46,18 @@ class CarComponentRepository extends AbstractEloquentRepository implements CarCo
     public function all(): array
     {
         $entities = [];
-        $results = EloquentCarComponentModel::all();
+        if (empty($this->_filters)) {
+            $results = EloquentCarComponentModel::all();
+        }
+        else {
+            $query = EloquentCarComponentModel::query();
+            if (!empty($this->_filters['car_component_id'])) {
+                print_r($this->_filters);
+                $query->whereIn('car_component_id', $this->_filters['car_component_id']);
+            }
+            $results = $query->get();
+        }
+
         foreach ($results as $carComponentModel)
         {
             $entities[] =$this->_mapToEntity($carComponentModel);
@@ -112,14 +123,14 @@ class CarComponentRepository extends AbstractEloquentRepository implements CarCo
     }
 
     /**
-     * Whether to filter to car components
+     * Filter car components by their primary key
      *
-     * @param bool $filter
+     * @param array $ids
      * @return $this
      */
-    public function filterUserAssigned(bool $filter = true): self
+    public function filterCarComponentIds(array $ids): self
     {
-        $this->_filters['userAssigned'] = $filter;
+        $this->_filters['car_component_id'] = $ids;
         return $this;
     }
 }
