@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use App\Contracts\Repositories\CarComponentRepositoryInterface;
 use App\Repositories\Eloquent\CarComponentLevelRepository;
-use App\Contracts\Repositories\CarComponentLevelRepositoryInterface;
 use App\Repositories\Eloquent\CarComponentRepository;
 use App\Repositories\Eloquent\UserCarComponentRepository;
+use App\Repositories\Eloquent\DriverRepository;
+use App\Repositories\Eloquent\DriverLevelRepository;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -24,6 +24,8 @@ class RepositoryServiceProvider extends ServiceProvider
         // Facade bindings
         'CarComponent' => CarComponentRepository::class,
         'CarComponentLevel' => CarComponentLevelRepository::class,
+        'Driver' => DriverRepository::class,
+        'DriverLevel' => DriverLevelRepository::class,
         'UserCarComponent' => UserCarComponentRepository::class,
     ];
 }
