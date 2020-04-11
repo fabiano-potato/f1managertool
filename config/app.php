@@ -174,7 +174,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
+        App\Providers\RepositoryServiceProvider::class,
     ],
 
     /*
@@ -227,6 +227,10 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+
+        'CarComponent' => App\Facades\CarComponent::class,
+        'CarComponentLevel' => App\Facades\CarComponentLevel::class,
+        'UserCarComponent' => App\Facades\UserCarComponent::class,
     ],
 
 ];
