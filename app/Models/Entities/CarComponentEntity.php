@@ -6,7 +6,7 @@ namespace App\Models\Entities;
  * Class CarComponentEntity
  * @package App\Models\Entities
  */
-class CarComponentEntity extends AbstractEntity
+final class CarComponentEntity extends AbstractEntity
 {
     const TYPE_BRAKES = 1;
     const TYPE_GEARBOX = 2;
@@ -23,6 +23,13 @@ class CarComponentEntity extends AbstractEntity
         self::TYPE_SUSPENSION => 'Suspension',
         self::TYPE_ENGINE => 'Engine',
     ];
+
+    /**
+     * The child CarComponentLevel entities
+     *
+     * @var array
+     */
+    protected $_carComponentLevels = [];
 
     /**
      * @var int the id for this entity
@@ -136,6 +143,18 @@ class CarComponentEntity extends AbstractEntity
     public function setUpdatedAt(string $updatedAt)
     {
         $this->_updatedAt = $updatedAt;
+        return $this;
+    }
+
+    /**
+     * Set the child CarComponentLevel entities
+     *
+     * @param array $carComponentLevelEntities
+     * @return $this
+     */
+    public function setCarComponentLevels(array $carComponentLevelEntities): self
+    {
+        $this->_carComponentLevels = $carComponentLevelEntities;
         return $this;
     }
 }

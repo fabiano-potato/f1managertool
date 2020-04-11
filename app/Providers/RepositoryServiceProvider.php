@@ -2,16 +2,11 @@
 
 namespace App\Providers;
 
+use App\Contracts\Repositories\CarComponentRepositoryInterface;
 use App\Repositories\Eloquent\CarComponentLevelRepository;
-use App\Repositories\CarComponentLevelRepositoryInterface;
-use App\Models\Eloquent\EloquentCarComponentLevelModel;
-use App\Models\Eloquent\EloquentCarComponentModel;
-use App\Models\Mappers\Eloquent\CarComponentLevelMapper;
-use App\Models\Mappers\CarComponentLevelMapperInterface;
-use App\Models\Mappers\Eloquent\CarComponentMapper;
-use App\Models\Mappers\CarComponentMapperInterface;
+use App\Contracts\Repositories\CarComponentLevelRepositoryInterface;
 use App\Repositories\Eloquent\CarComponentRepository;
-use App\Repositories\CarComponentRepositoryInterface;
+use App\Repositories\Eloquent\UserCarComponentRepository;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -21,24 +16,14 @@ use Illuminate\Support\ServiceProvider;
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
-     * Register the repository classes
+     * All of the container bindings that should be registered.
      *
-     * @return  void
+     * @var array
      */
-    public function register()
-    {
-        parent::register();
-
-        // Bind the car component repository and mapper
-        $this->app->bind(CarComponentMapperInterface::class, CarComponentMapper::class);
-        $this->app->bind(CarComponentRepositoryInterface::class, function(){
-            return new CarComponentRepository(new CarComponentMapper(), new EloquentCarComponentModel());
-        });
-
-        // Bind the car component level repository and mapper
-        $this->app->bind(CarComponentLevelMapperInterface::class, CarComponentLevelMapper::class);
-        $this->app->bind(CarComponentLevelRepositoryInterface::class, function(){
-            return new CarComponentLevelRepository(new CarComponentLevelMapper(), new EloquentCarComponentLevelModel());
-        });
-    }
+    public $bindings = [
+        // Facade bindings
+        'CarComponent' => CarComponentRepository::class,
+        'CarComponentLevel' => CarComponentLevelRepository::class,
+        'UserCarComponent' => UserCarComponentRepository::class,
+    ];
 }

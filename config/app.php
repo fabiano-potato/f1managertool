@@ -227,6 +227,10 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+
+        'CarComponent' => App\Facades\CarComponent::class,
+        'CarComponentLevel' => App\Facades\CarComponentLevel::class,
+        'UserCarComponent' => App\Facades\UserCarComponent::class,
     ],
 
 ];

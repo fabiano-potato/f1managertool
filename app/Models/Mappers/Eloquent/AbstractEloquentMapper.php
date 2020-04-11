@@ -3,7 +3,6 @@
 namespace App\Models\Mappers\Eloquent;
 
 use App\Models\Entities\AbstractEntity;
-use \App\Models\Mappers\MapperInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -11,7 +10,7 @@ use Illuminate\Support\Str;
  * Class AbstractEloquentMapper
  * @package App\Models\Mappers\Eloquent
  */
-abstract class AbstractEloquentMapper implements MapperInterface
+abstract class AbstractEloquentMapper
 {
     /**
      * A map of Entity property names to model property names
@@ -27,7 +26,7 @@ abstract class AbstractEloquentMapper implements MapperInterface
      * @param AbstractEntity $entity
      * @return AbstractEntity
      */
-    public function toEntity(Model $model, AbstractEntity $entity)
+    protected function _toEntity(Model $model, AbstractEntity $entity)
     {
         foreach (static::$_entityModelPropertyMap as $entityProp => $modelProp)
         {
@@ -42,28 +41,13 @@ abstract class AbstractEloquentMapper implements MapperInterface
     }
 
     /**
-     * Map an array of models to an array of entities
-     *
-     * @param array $models
-     * @return array
-     */
-    public function toEntities(array $models): array
-    {
-        $return = [];
-        foreach ($models as $model) {
-            $return[] = $this->toEntity($model);
-        }
-        return $return;
-    }
-
-    /**
      * Map the entity to an eloquent model
      *
      * @param AbstractEntity $entity
      * @param Model $model
      * @return Model
      */
-    public function toModel(AbstractEntity $entity, Model $model): Model
+    protected function _toModel(AbstractEntity $entity, Model $model): Model
     {
         foreach (static::$_entityModelPropertyMap as $entityProp => $modelProp)
         {
