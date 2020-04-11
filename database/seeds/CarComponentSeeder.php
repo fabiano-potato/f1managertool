@@ -1,11 +1,9 @@
 <?php
 
+use App\Facades\CarComponent;
+use App\Facades\CarComponentLevel;
 use App\Models\Entities\CarComponentEntity;
 use App\Models\Entities\CarComponentLevelEntity;
-use App\Providers\RepositoryServiceProvider;
-use App\Repositories\Eloquent\CarComponentLevelRepository;
-use App\Repositories\Eloquent\CarComponentRepository;
-use Carbon\Laravel\ServiceProvider;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
 
@@ -31,8 +29,7 @@ class CarComponentSeeder extends Seeder
      *
      * @return void
      */
-    public function run(CarComponentRepository $carComponentRepository,
-                        CarComponentLevelRepository $carComponentLevelRepository)
+    public function run()
     {
         // Read files from the directory types
         foreach (self::$_typeDirMap as $type => $dirName) {
@@ -54,7 +51,7 @@ class CarComponentSeeder extends Seeder
                 $carComponentEntity = new CarComponentEntity();
                 $carComponentEntity->setType($type);
                 $carComponentEntity->setName($data['name']);
-                $success = $carComponentRepository->create($carComponentEntity);
+                $success = CarComponent::create($carComponentEntity);
                 if (!$success) {
                     echo "Couldn't create carComponent for type: " . $type . PHP_EOL;
                     continue;
@@ -65,7 +62,7 @@ class CarComponentSeeder extends Seeder
                     $carComponentLevelEntity = new CarComponentLevelEntity();
                     $carComponentLevelEntity->setCarComponentId($carComponentEntity->getCarComponentId());
                     $carComponentLevelEntity->fromArray($levelData);
-                    $success = $carComponentLevelRepository->create($carComponentLevelEntity);
+                    $success = CarComponentLevel::create($carComponentLevelEntity);
                     if (!$success) {
                         echo sprintf(
                             "Couldn't create carComponentLevel %d for component: %s",
