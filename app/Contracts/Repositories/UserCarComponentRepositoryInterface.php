@@ -18,7 +18,7 @@ interface UserCarComponentRepositoryInterface
     public function all(): array;
 
     /**
-     * Find entity by it's Id
+     * Find entity by its Id
      *
      * @param mixed $id
      * @return null|UserCarComponentEntity
