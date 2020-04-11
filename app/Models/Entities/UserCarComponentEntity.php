@@ -2,15 +2,69 @@
 
 namespace App\Models\Entities;
 
+/**
+ * Class UserCarComponentEntity
+ * @package App\Models\Entities
+ *
+ * This class handles the association between a User and CarComponent entities
+ */
 class UserCarComponentEntity extends AbstractEntity
 {
+    /**
+     * The primary key for entity
+     *
+     * @var int $_userCarComponentsId
+     */
     protected $_userCarComponentsId;
+
+    /**
+     * The foreign key to the User entity
+     *
+     * @var int $_userId
+     */
     protected $_userId;
+
+    /**
+     * The foreign key to the CarComponent entity
+     *
+     * @var
+     */
     protected $_carComponentId;
+
+    /**
+     * The number of current upgrade points that User has for this component
+     *
+     * @var int
+     */
     protected $_currentUpgradePoints;
+
+    /**
+     * The current unlocked level for this component
+     *
+     * @var int
+     */
     protected $_currentLevel;
-    protected $_created_at;
-    protected $_updated_at;
+
+    /**
+     * Whether this component is assigned to the user's car
+     *
+     * @var boolean
+     */
+    protected $_assignedToCar;
+
+    /**
+     * The timestamp that the entity was created
+     *
+     * @var string
+     */
+    protected $_createdAt;
+
+    /**
+     * The timestamp that the entity was last updated
+     *
+     * @var string
+     */
+    protected $_updatedAt;
 
     /**
      * @return mixed
@@ -93,11 +147,27 @@ class UserCarComponentEntity extends AbstractEntity
     }
 
     /**
+     * @return bool
+     */
+    public function isAssignedToCar(): bool
+    {
+        return $this->_assignedToCar;
+    }
+
+    /**
+     * @param bool $assignedToCar
+     */
+    public function setAssignedToCar(bool $assignedToCar): void
+    {
+        $this->_assignedToCar = $assignedToCar;
+    }
+
+    /**
      * @return mixed
      */
     public function getCreatedAt()
     {
-        return $this->_created_at;
+        return $this->_createdAt;
     }
 
     /**
@@ -105,7 +175,7 @@ class UserCarComponentEntity extends AbstractEntity
      */
     public function setCreatedAt($created_at): void
     {
-        $this->_created_at = $created_at;
+        $this->_createdAt = $created_at;
     }
 
     /**
@@ -113,7 +183,7 @@ class UserCarComponentEntity extends AbstractEntity
      */
     public function getUpdatedAt()
     {
-        return $this->_updated_at;
+        return $this->_updatedAt;
     }
 
     /**
@@ -121,6 +191,6 @@ class UserCarComponentEntity extends AbstractEntity
      */
     public function setUpdatedAt($updated_at): void
     {
-        $this->_updated_at = $updated_at;
+        $this->_updatedAt = $updated_at;
     }
 }

@@ -27,6 +27,13 @@ class CarComponentRepository extends AbstractEloquentRepository implements CarCo
     protected $_includeCarComponentLevels = false;
 
     /**
+     * A list of active filters for query
+     *
+     * @var array
+     */
+    protected $_filters = [];
+
+    /**
      * CarComponentRepository constructor.
      */
     public function __construct(){
@@ -98,9 +105,21 @@ class CarComponentRepository extends AbstractEloquentRepository implements CarCo
      * @param bool $include
      * @return self
      */
-    public function includeCarComponentLevels($include = true): self
+    public function includeCarComponentLevels(bool $include = true): self
     {
         $this->_includeCarComponentLevels = $include;
+        return $this;
+    }
+
+    /**
+     * Whether to filter to car components
+     *
+     * @param bool $filter
+     * @return $this
+     */
+    public function filterUserAssigned(bool $filter = true): self
+    {
+        $this->_filters['userAssigned'] = $filter;
         return $this;
     }
 }
