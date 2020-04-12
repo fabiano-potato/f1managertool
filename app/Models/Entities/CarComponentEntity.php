@@ -32,6 +32,13 @@ final class CarComponentEntity extends AbstractEntity
     protected $_carComponentLevels = [];
 
     /**
+     * The active CarComponentLevel for this entity
+     *
+     * @var CarComponentLevelEntity
+     */
+    protected $_activeCarComponentLevel = null;
+
+    /**
      * @var int the id for this entity
      */
     protected $_carComponentId = null;
@@ -55,6 +62,13 @@ final class CarComponentEntity extends AbstractEntity
      * @var string the timestamp for when this instance was last saved
      */
     protected $_updatedAt = null;
+
+    /**
+     * Flag for whether this CarComponent is assigned to the current user
+     *
+     * @var bool
+     */
+    protected $_isAssigned = false;
 
     /**
      * @return int
@@ -156,5 +170,47 @@ final class CarComponentEntity extends AbstractEntity
     {
         $this->_carComponentLevels = $carComponentLevelEntities;
         return $this;
+    }
+
+    /**
+     * Get the child CarComponentLevel entities
+     *
+     * @return array
+     */
+    public function getCarComponentLevels(): array
+    {
+        return $this->_carComponentLevels;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAssigned(): bool
+    {
+        return $this->_isAssigned;
+    }
+
+    /**
+     * @param bool $isAssigned
+     */
+    public function setIsAssigned(bool $isAssigned): void
+    {
+        $this->_isAssigned = $isAssigned;
+    }
+
+    /**
+     * @return CarComponentLevelEntity
+     */
+    public function getActiveCarComponentLevel(): CarComponentLevelEntity
+    {
+        return $this->_activeCarComponentLevel;
+    }
+
+    /**
+     * @param CarComponentLevelEntity $activeCarComponentLevel
+     */
+    public function setActiveCarComponentLevel(CarComponentLevelEntity $activeCarComponentLevel): void
+    {
+        $this->_activeCarComponentLevel = $activeCarComponentLevel;
     }
 }

@@ -40,13 +40,29 @@ interface CarComponentRepositoryInterface
      * @param bool $include
      * @return CarComponentRepository
      */
-    public function includeCarComponentLevels(bool $include = false): self;
+    public function includeCarComponentLevels(bool $include = false): CarComponentRepository;
 
     /**
      * Filter car components by their primary key
      *
      * @param array $ids
-     * @return $this
+     * @return CarComponentRepository
      */
-    public function filterCarComponentIds(array $ids): self;
+    public function filterCarComponentIds(array $ids): CarComponentRepository;
+
+    /**
+     * Filter query by type
+     *
+     * @param int $type
+     * @return CarComponentRepository
+     */
+    public function filterType(int $type): CarComponentRepository;
+
+    /**
+     * Filter out car components by their primary key
+     *
+     * @param array $ids
+     * @return CarComponentRepository
+     */
+    public function filterNotCarComponentIds(array $ids): CarComponentRepository;
 }

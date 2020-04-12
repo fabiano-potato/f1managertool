@@ -21,6 +21,13 @@ class CarComponentLevelRepository extends AbstractEloquentRepository implements 
     protected $_mapper = null;
 
     /**
+     * Filters for queries
+     *
+     * @var array
+     */
+    protected $_filters = [];
+
+    /**
      * Whether to include and return the parent CarComponent
      *
      * @var bool
@@ -32,6 +39,36 @@ class CarComponentLevelRepository extends AbstractEloquentRepository implements 
      */
     public function __construct() {
         $this->_mapper = new CarComponentLevelMapper();
+    }
+
+    /**
+     * Get all CarComponentLevelEntities
+     *
+     * @return array of CarComponentLevelEntities
+     */
+    public function all(): array
+    {
+        if ($this->_filters) {
+            $query = EloquentCarComponentLevelModel::query();
+
+            $this->_filter($query, 'car_component_id', $this->_filters['car_component_id']);
+            $this->_filter($query, 'level', $this->_filters['level']);
+
+            $results = $query->get();
+        }
+        else {
+            $results = EloquentCarComponentLevelModel::all();
+        }
+
+        if (!$results) {
+            return [];
+        }
+
+        $return = [];
+        foreach ($results as $carComponentLevelModel) {
+            $return[] = $this->_mapToEntity($carComponentLevelModel);
+        }
+        return $return;
     }
 
     /**
@@ -60,25 +97,6 @@ class CarComponentLevelRepository extends AbstractEloquentRepository implements 
     {
         $this->_includeCarComponent = $include;
         return $this;
-    }
-
-    /**
-     * Get all CarComponentLevelEntities
-     *
-     * @return array of CarComponentLevelEntities
-     */
-    public function find(): array
-    {
-        $results = EloquentCarComponentLevelModel::all();
-        if (!$results) {
-            return [];
-        }
-
-        $return = [];
-        foreach ($results as $carComponentLevelModel) {
-            $return[] = $this->_mapToEntity($carComponentLevelModel);
-        }
-        return $return;
     }
 
     /**
@@ -131,5 +149,29 @@ class CarComponentLevelRepository extends AbstractEloquentRepository implements 
         }
 
         return $carComponentLevelEntity;
+    }
+
+    /**
+     * Add query filter on car_component_id
+     *
+     * @param array|int $filterValue
+     * @return $this
+     */
+    public function filterByCarComponentId($filterValue): self
+    {
+        $this->_filters['car_component_id'] = $filterValue;
+        return $this;
+    }
+
+    /**
+     * Add query filter on level
+     *
+     * @param array|int $filterValue
+     * @return $this
+     */
+    public function filterByLevel($filterValue): self
+    {
+        $this->_filters['level'] = $filterValue;
+        return $this;
     }
 }

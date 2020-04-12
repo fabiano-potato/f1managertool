@@ -19,4 +19,18 @@ class EloquentUserCarComponentModel extends Model
      * @var string
      */
     protected $primaryKey = 'user_car_components_id';
+
+    /**
+     * @var array
+     */
+    protected $fillable = [
+        'user_id',
+        'car_component_id',
+        'current_level',
+        'car_component_type',
+        'current_upgrade_points',
+        'is_assigned',
+        'updated_at',
+        'created_at',
+    ];
 }

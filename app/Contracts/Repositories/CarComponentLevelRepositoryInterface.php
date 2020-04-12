@@ -16,7 +16,7 @@ interface CarComponentLevelRepositoryInterface
      *
      * @return array of CarComponentEntity objects
      */
-    public function find(): array;
+    public function all(): array;
 
     /**
      * Find entity by it's Id
@@ -42,4 +42,20 @@ interface CarComponentLevelRepositoryInterface
      * @return CarComponentLevelRepository
      */
     public function includeCarComponent($include = true): CarComponentLevelRepository;
+
+    /**
+     * Add query filter on car_component_id
+     *
+     * @param array|int $filterValue
+     * @return CarComponentLevelRepository
+     */
+    public function filterByCarComponentId($filterValue): CarComponentLevelRepository;
+
+    /**
+     * Add query filter on level
+     *
+     * @param array|int $filterValue
+     * @return CarComponentLevelRepository
+     */
+    public function filterByLevel($filterValue): CarComponentLevelRepository;
 }

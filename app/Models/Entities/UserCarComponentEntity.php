@@ -2,6 +2,8 @@
 
 namespace App\Models\Entities;
 
+use App\Facades\CarComponentLevel;
+
 /**
  * Class UserCarComponentEntity
  * @package App\Models\Entities
@@ -25,9 +27,16 @@ class UserCarComponentEntity extends AbstractEntity
     protected $_userId;
 
     /**
+     * The type of car component
+     *
+     * @var int
+     */
+    protected $_carComponentType;
+
+    /**
      * The foreign key to the CarComponent entity
      *
-     * @var
+     * @var int
      */
     protected $_carComponentId;
 
@@ -50,7 +59,7 @@ class UserCarComponentEntity extends AbstractEntity
      *
      * @var boolean
      */
-    protected $_assignedToCar;
+    protected $_isAssigned = false;
 
     /**
      * The timestamp that the entity was created
@@ -67,6 +76,13 @@ class UserCarComponentEntity extends AbstractEntity
     protected $_updatedAt;
 
     /**
+     * The current CarComponentLevelEntity
+     *
+     * @var CarComponentLevelEntity
+     */
+    protected $_carComponentLevel;
+
+    /**
      * @return mixed
      */
     public function getUserCarComponentsId()
@@ -76,10 +92,12 @@ class UserCarComponentEntity extends AbstractEntity
 
     /**
      * @param mixed $userCarComponentsId
+     * @return UserCarComponentEntity
      */
-    public function setUserCarComponentsId($userCarComponentsId): void
+    public function setUserCarComponentsId($userCarComponentsId): self
     {
         $this->_userCarComponentsId = $userCarComponentsId;
+        return $this;
     }
 
     /**
@@ -92,10 +110,12 @@ class UserCarComponentEntity extends AbstractEntity
 
     /**
      * @param mixed $userId
+     * @return UserCarComponentEntity
      */
-    public function setUserId($userId): void
+    public function setUserId($userId): self
     {
         $this->_userId = $userId;
+        return $this;
     }
 
     /**
@@ -108,10 +128,12 @@ class UserCarComponentEntity extends AbstractEntity
 
     /**
      * @param mixed $carComponentId
+     * @return UserCarComponentEntity
      */
-    public function setCarComponentId($carComponentId): void
+    public function setCarComponentId($carComponentId): self
     {
         $this->_carComponentId = $carComponentId;
+        return $this;
     }
 
     /**
@@ -124,10 +146,12 @@ class UserCarComponentEntity extends AbstractEntity
 
     /**
      * @param mixed $currentUpgradePoints
+     * @return UserCarComponentEntity
      */
-    public function setCurrentUpgradePoints($currentUpgradePoints): void
+    public function setCurrentUpgradePoints($currentUpgradePoints): self
     {
         $this->_currentUpgradePoints = $currentUpgradePoints;
+        return $this;
     }
 
     /**
@@ -140,26 +164,12 @@ class UserCarComponentEntity extends AbstractEntity
 
     /**
      * @param mixed $currentLevel
+     * @return UserCarComponentEntity
      */
-    public function setCurrentLevel($currentLevel): void
+    public function setCurrentLevel($currentLevel): self
     {
         $this->_currentLevel = $currentLevel;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isAssignedToCar(): bool
-    {
-        return $this->_assignedToCar;
-    }
-
-    /**
-     * @param bool $assignedToCar
-     */
-    public function setAssignedToCar(bool $assignedToCar): void
-    {
-        $this->_assignedToCar = $assignedToCar;
+        return $this;
     }
 
     /**
@@ -172,10 +182,12 @@ class UserCarComponentEntity extends AbstractEntity
 
     /**
      * @param mixed $created_at
+     * @return UserCarComponentEntity
      */
-    public function setCreatedAt($created_at): void
+    public function setCreatedAt($created_at): self
     {
         $this->_createdAt = $created_at;
+        return $this;
     }
 
     /**
@@ -188,9 +200,65 @@ class UserCarComponentEntity extends AbstractEntity
 
     /**
      * @param mixed $updated_at
+     * @return UserCarComponentEntity
      */
-    public function setUpdatedAt($updated_at): void
+    public function setUpdatedAt($updated_at): self
     {
         $this->_updatedAt = $updated_at;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCarComponentType(): int
+    {
+        return $this->_carComponentType;
+    }
+
+    /**
+     * @param int $carComponentType
+     * @return UserCarComponentEntity
+     */
+    public function setCarComponentType(int $carComponentType): self
+    {
+        $this->_carComponentType = $carComponentType;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAssigned(): bool
+    {
+        return $this->_isAssigned;
+    }
+
+    /**
+     * @param bool $isAssigned
+     * @return self
+     */
+    public function setIsAssigned(bool $isAssigned): self
+    {
+        $this->_isAssigned = $isAssigned;
+        return $this;
+    }
+
+    /**
+     * @return CarComponentLevelEntity
+     */
+    public function getCarComponentLevel(): ?CarComponentLevelEntity
+    {
+        return $this->_carComponentLevel;
+    }
+
+    /**
+     * @param CarComponentLevelEntity $carComponentLevel
+     * @return self
+     */
+    public function setCarComponentLevel(CarComponentLevelEntity $carComponentLevel): self
+    {
+        $this->_carComponentLevel = $carComponentLevel;
+        return $this;
     }
 }

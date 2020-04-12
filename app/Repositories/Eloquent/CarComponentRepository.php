@@ -51,10 +51,18 @@ class CarComponentRepository extends AbstractEloquentRepository implements CarCo
         }
         else {
             $query = EloquentCarComponentModel::query();
-            if (!empty($this->_filters['car_component_id'])) {
-                print_r($this->_filters);
-                $query->whereIn('car_component_id', $this->_filters['car_component_id']);
+
+            // Add filters
+            if (isset($this->_filters['car_component_id'])) {
+                $this->_filter($query, 'car_component_id', $this->_filters['car_component_id']);
             }
+            if (isset($this->_filters['type'])) {
+                $this->_filter($query, 'type', $this->_filters['type']);
+            }
+            if (isset($this->_filters['not_car_component_id'])) {
+                $this->_filterNot($query, 'car_component_id', $this->_filters['not_car_component_id']);
+            }
+
             $results = $query->get();
         }
 
@@ -114,7 +122,7 @@ class CarComponentRepository extends AbstractEloquentRepository implements CarCo
      * Whether to include and return the child CarComponentLevel entities
      *
      * @param bool $include
-     * @return self
+     * @return CarComponentRepository
      */
     public function includeCarComponentLevels(bool $include = true): self
     {
@@ -126,11 +134,35 @@ class CarComponentRepository extends AbstractEloquentRepository implements CarCo
      * Filter car components by their primary key
      *
      * @param array $ids
-     * @return $this
+     * @return CarComponentRepository
      */
     public function filterCarComponentIds(array $ids): self
     {
         $this->_filters['car_component_id'] = $ids;
+        return $this;
+    }
+
+    /**
+     * Filter out car components by their primary key
+     *
+     * @param array $ids
+     * @return CarComponentRepository
+     */
+    public function filterNotCarComponentIds(array $ids): self
+    {
+        $this->_filters['not_car_component_id'] = $ids;
+        return $this;
+    }
+
+    /**
+     * Filter query by car_component_type
+     *
+     * @param int $type
+     * @return CarComponentRepository
+     */
+    public function filterType(int $type): self
+    {
+        $this->_filters['type'] = $type;
         return $this;
     }
 }

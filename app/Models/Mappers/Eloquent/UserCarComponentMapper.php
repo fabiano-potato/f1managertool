@@ -19,9 +19,11 @@ Class UserCarComponentMapper extends AbstractEloquentMapper
     protected static $_entityModelPropertyMap = [
         'userCarComponentsId' => 'user_car_components_id',
         'userId' => 'user_id',
+        'carComponentType' => 'car_component_type',
         'carComponentId' => 'car_component_id',
         'currentUpgradePoints' => 'current_upgrade_points',
         'currentLevel' => 'current_level',
+        'isAssigned' => 'is_assigned',
         'created_at' => 'created_at',
         'updated_at' => 'updated_at',
     ];

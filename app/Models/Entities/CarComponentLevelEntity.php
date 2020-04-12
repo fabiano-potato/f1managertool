@@ -2,6 +2,8 @@
 
 namespace App\Models\Entities;
 
+use App\Services\Comparers\CarComponentLevelComparer;
+
 /**
  * Class CarComponentLevelEntity
  * @package App\Models\Entities
@@ -73,6 +75,20 @@ final class CarComponentLevelEntity extends AbstractEntity
     protected $_carComponentEntity = null;
 
     /**
+     * Class for comparing this entity
+     *
+     * @var null|CarComponentLevelComparer
+     */
+    protected $_comparer = null;
+
+    /**
+     * Whether the user has unlocked this level
+     *
+     * @var bool
+     */
+    protected $_userEnabled = false;
+
+    /**
      * @return int
      */
     public function getCarComponentLevelId()
@@ -118,6 +134,7 @@ final class CarComponentLevelEntity extends AbstractEntity
 
     /**
      * @param int $level
+     * @return CarComponentLevelEntity
      */
     public function setLevel(int $level): self
     {
@@ -303,5 +320,37 @@ final class CarComponentLevelEntity extends AbstractEntity
     public function setCarComponentEntity(?CarComponentEntity $carComponentEntity): void
     {
         $this->_carComponentEntity = $carComponentEntity;
+    }
+
+    /**
+     * @return CarComponentLevelComparer|null
+     */
+    public function getComparer(): ?CarComponentLevelComparer
+    {
+        return $this->_comparer;
+    }
+
+    /**
+     * @param CarComponentLevelComparer|null $comparer
+     */
+    public function setComparer(?CarComponentLevelComparer $comparer): void
+    {
+        $this->_comparer = $comparer;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUserEnabled(): bool
+    {
+        return $this->_userEnabled;
+    }
+
+    /**
+     * @param bool $userEnabled
+     */
+    public function setUserEnabled(bool $userEnabled): void
+    {
+        $this->_userEnabled = $userEnabled;
     }
 }

@@ -4,6 +4,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Mappers\Eloquent\AbstractEloquentMapper;
 use App\Models\Entities\AbstractEntity;
+use Illuminate\Database\Eloquent\Builder;
 
 abstract class AbstractEloquentRepository
 {
@@ -30,5 +31,45 @@ abstract class AbstractEloquentRepository
         }
 
         return $result;
+    }
+
+    /**
+     * Filter the $query with a whitelist of values for a column
+     *
+     * @param Builder $query (passed by reference)
+     * @param $dbColumnName
+     * @param $filterValue
+     */
+    protected function _filter(Builder &$query, $dbColumnName, $filterValue): void
+    {
+        if (!$filterValue) {
+            return;
+        }
+        if (is_array($filterValue)) {
+            $query->whereIn($dbColumnName, $filterValue);
+        }
+        else {
+            $query->where($dbColumnName, $filterValue);
+        }
+    }
+
+    /**
+     * Filter the $query by excluding the values in a column
+     *
+     * @param Builder $query (passed by reference)
+     * @param $dbColumnName
+     * @param $filterValue
+     */
+    protected function _filterNot(Builder &$query, $dbColumnName, $filterValue): void
+    {
+        if (!$filterValue) {
+            return;
+        }
+        if (is_array($filterValue)) {
+            $query->whereNotIn($dbColumnName, $filterValue);
+        }
+        else {
+            $query->where($dbColumnName, '<>', $filterValue);
+        }
     }
 }
