@@ -1,9 +1,10 @@
 <?php
 
-use App\Facades\CarComponent;
-use App\Facades\CarComponentLevel;
+use App\Contracts\Repositories\CarComponentRepositoryInterface;
+use App\Contracts\Repositories\CarComponentLevelRepositoryInterface;
 use App\Models\Entities\CarComponentEntity;
 use App\Models\Entities\CarComponentLevelEntity;
+use App\Repositories\Eloquent\CarComponentRepository;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
 
@@ -23,6 +24,28 @@ class CarComponentSeeder extends Seeder
         CarComponentEntity::TYPE_SUSPENSION => 'suspension',
         CarComponentEntity::TYPE_ENGINE => 'engine',
     ];
+
+    /**
+     * @var CarComponentRepository
+     */
+    protected $_carComponentRepository;
+
+    /**
+     * @var CarComponentLevelRepository
+     */
+    protected $_carComponentLevelRepository;
+
+    /**
+     * CarComponentSeeder constructor.
+     * @param CarComponentRepositoryInterface $carComponentRepository
+     * @param CarComponentLevelRepositoryInterface $carComponentLevelRepository
+     */
+    public function __construct(CarComponentRepositoryInterface $carComponentRepository,
+                                CarComponentLevelRepositoryInterface $carComponentLevelRepository)
+    {
+        $this->_carComponentRepository = $carComponentRepository;
+        $this->_carComponentLevelRepository = $carComponentLevelRepository;
+    }
 
     /**
      * Run the database seeds.
@@ -45,31 +68,36 @@ class CarComponentSeeder extends Seeder
                 continue;
             }
             foreach ($files as $file) {
-                $data = $this->_processFileContents(File::get($file));
+                try {
+                    $data = $this->_processFileContents(File::get($file));
 
-                // Create the Car Component
-                $carComponentEntity = new CarComponentEntity();
-                $carComponentEntity->setType($type);
-                $carComponentEntity->setName($data['name']);
-                $success = CarComponent::create($carComponentEntity);
-                if (!$success) {
-                    echo "Couldn't create carComponent for type: " . $type . PHP_EOL;
-                    continue;
-                }
-
-                // Save level data
-                foreach ($data['levels'] as $levelData) {
-                    $carComponentLevelEntity = new CarComponentLevelEntity();
-                    $carComponentLevelEntity->setCarComponentId($carComponentEntity->getCarComponentId());
-                    $carComponentLevelEntity->fromArray($levelData);
-                    $success = CarComponentLevel::create($carComponentLevelEntity);
+                    // Create the Car Component
+                    $carComponentEntity = new CarComponentEntity();
+                    $carComponentEntity->setType($type);
+                    $carComponentEntity->setName($data['name']);
+                    $success = $this->_carComponentRepository->create($carComponentEntity);
                     if (!$success) {
-                        echo sprintf(
-                            "Couldn't create carComponentLevel %d for component: %s",
-                            $levelData['level'],
-                            $carComponentEntity->getName()
-                        );
+                        echo "Couldn't create carComponent for type: " . $type . PHP_EOL;
+                        continue;
                     }
+
+                    // Save level data
+                    foreach ($data['levels'] as $levelData) {
+                        $carComponentLevelEntity = new CarComponentLevelEntity();
+                        $carComponentLevelEntity->setCarComponentId($carComponentEntity->getCarComponentId());
+                        $carComponentLevelEntity->fromArray($levelData);
+                        $success = $this->_carComponentLevelRepository->create($carComponentLevelEntity);
+                        if (!$success) {
+                            echo sprintf(
+                                "Couldn't create carComponentLevel %d for component: %s",
+                                $levelData['level'],
+                                $carComponentEntity->getName()
+                            );
+                        }
+                    }
+                }
+                catch (Exception $e) {
+                    echo 'Failed importing row:' . $e->getMessage() . PHP_EOL;
                 }
             }
         }

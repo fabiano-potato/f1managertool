@@ -1,7 +1,7 @@
 <?php
 
-use App\Facades\Driver;
-use App\Facades\DriverLevel;
+use App\Contracts\Repositories\DriverLevelRepositoryInterface;
+use App\Contracts\Repositories\DriverRepositoryInterface;
 use App\Models\Entities\DriverEntity;
 use App\Models\Entities\DriverLevelEntity;
 use Illuminate\Database\Seeder;
@@ -9,6 +9,26 @@ use Illuminate\Support\Facades\File;
 
 class DriverSeeder extends Seeder
 {
+    /**
+     * @var DriverRepositoryInterface
+     */
+    protected $_driverRepository;
+
+    /**
+     * @var DriverLevelRepositoryInterface
+     */
+    protected $_driverLevelRepository;
+
+    /**
+     * DriverSeeder constructor.
+     * @param DriverRepositoryInterface $driverRepository
+     * @param DriverLevelRepositoryInterface $driverLevelRepository
+     */
+    public function __construct(DriverRepositoryInterface $driverRepository, DriverLevelRepositoryInterface $driverLevelRepository)
+    {
+        $this->_driverRepository = $driverRepository;
+        $this->_driverLevelRepository = $driverLevelRepository;
+    }
 
     /**
      * Run the database seeds.
@@ -35,7 +55,7 @@ class DriverSeeder extends Seeder
                 // Create the Entity
                 $driverEntity = new DriverEntity();
                 $driverEntity->setName($data['name']);
-                $success = Driver::create($driverEntity);
+                $success = $this->_driverRepository->create($driverEntity);
                 if (!$success) {
                     echo "Couldn't create Driver: " . $data['name'] . PHP_EOL;
                     continue;
@@ -46,7 +66,7 @@ class DriverSeeder extends Seeder
                     $driverLevelEntity = new DriverLevelEntity();
                     $driverLevelEntity->setDriverId($driverEntity->getDriverId());
                     $driverLevelEntity->fromArray($levelData);
-                    $success = DriverLevel::create($driverLevelEntity);
+                    $success = $this->_driverLevelRepository->create($driverLevelEntity);
                     if (!$success) {
                         echo sprintf(
                             "Couldn't create driverLevel %d for driver: %s",
