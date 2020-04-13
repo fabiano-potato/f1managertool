@@ -8,7 +8,7 @@ use App\Services\Comparers\CarComponentLevelComparer;
  * Class CarComponentLevelEntity
  * @package App\Models\Entities
  */
-final class CarComponentLevelEntity extends AbstractEntity
+class CarComponentLevelEntity extends AbstractEntity
 {
     /**
      * @var int the id for this entity

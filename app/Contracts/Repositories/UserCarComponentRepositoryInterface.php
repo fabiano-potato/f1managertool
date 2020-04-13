@@ -45,34 +45,34 @@ interface UserCarComponentRepositoryInterface
      * Filter query by userId
      *
      * @param mixed $userId int or array of ids to filter by
-     * @return UserCarComponentRepository
+     * @return self
      */
-    public function filterUserId($userId): UserCarComponentRepository;
+    public function filterUserId($userId): self;
 
     /**
      * Filter query by car_component_type
      *
      * @param mixed $type int or array of types to filter by
-     * @return UserCarComponentRepository
+     * @return self
      */
-    public function filterCarComponentType($type): UserCarComponentRepository;
+    public function filterCarComponentType($type): self;
 
     /**
      * Filter result(s) by car_component_id
      *
      * @param mixed $id int or array of ids to filter by
-     * @return UserCarComponentRepository
+     * @return self
      */
-    public function filterCarComponentId($id): UserCarComponentRepository;
+    public function filterCarComponentId($id): self;
 
     /**
      * Unassign any preexisting CarComponents for the given type
      *
      * @param $userId
      * @param $type
-     * @return UserCarComponentRepository
+     * @return self
      */
-    public function unassignComponentsForType(int $userId, int $type): UserCarComponentRepository;
+    public function unassignComponentsForType(int $userId, int $type): self;
 
     /**
      * Update an existing UserCarComponentEntity

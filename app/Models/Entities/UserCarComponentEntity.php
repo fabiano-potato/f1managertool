@@ -2,8 +2,6 @@
 
 namespace App\Models\Entities;
 
-use App\Facades\CarComponentLevel;
-
 /**
  * Class UserCarComponentEntity
  * @package App\Models\Entities

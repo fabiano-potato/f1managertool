@@ -69,25 +69,50 @@ class CarComponentAssigner
         $this->_userCarComponentRepository->unassignComponentsForType($userId, $carComponentEntity->getType());
 
         // Find a UserCarComponent
-        $userCarComponentEntity = $this->_userCarComponentRepository->filterUserId($userId)
-            ->filterCarComponentId($carComponentLevelEntity->getCarComponentId())->findOne();
+        $userCarComponentEntity = $this->_findUserCarComponentEntity($userId, $carComponentLevelEntity->getCarComponentId());
 
         if ($userCarComponentEntity) {
             // Update the entity and assign to user
-            $userCarComponentEntity
-                ->setIsAssigned(true);
+            $userCarComponentEntity->setIsAssigned(true);
             return $this->_userCarComponentRepository->update($userCarComponentEntity);
         }
         else {
             // Create a new one
-            $userCarComponentEntity = new UserCarComponentEntity();
-            $userCarComponentEntity->setUserId($userId)
-                ->setCarComponentId($carComponentEntity->getCarComponentId())
-                ->setCurrentLevel(1) // If entity doesn't exist yet, we're saving the first level
-                ->setCarComponentType($carComponentEntity->getType())
-                ->setIsAssigned(true)
-                ->setCurrentUpgradePoints(0);
-            return $this->_userCarComponentRepository->create($userCarComponentEntity);
+            return $this->_createNewAssigned($userId, $carComponentEntity->getCarComponentId(), $carComponentEntity->getType());
         }
+    }
+
+    /**
+     * Find a UserCarComponentEntity for a given carComponentId
+     *
+     * @param $userId
+     * @param $carComponentId
+     * @return UserCarComponentEntity|null
+     */
+    protected function _findUserCarComponentEntity($userId, $carComponentId): ?UserCarComponentEntity
+    {
+        return $this->_userCarComponentRepository->filterUserId($userId)
+            ->filterCarComponentId($carComponentId)->findOne();
+    }
+
+    /**
+     * Create a new UserCarComponentEntity and set it as assigned to User.
+     *
+     * @param $userId
+     * @param $carComponentId
+     * @param $type
+     * @return bool
+     */
+    protected function _createNewAssigned($userId, $carComponentId, $type): bool
+    {
+        // TODO: Implement entity factory
+        $userCarComponentEntity = new UserCarComponentEntity();
+        $userCarComponentEntity->setUserId($userId)
+            ->setCarComponentId($carComponentId)
+            ->setCurrentLevel(1) // If entity doesn't exist yet, we're saving the first level
+            ->setCarComponentType($type)
+            ->setIsAssigned(true)
+            ->setCurrentUpgradePoints(0);
+        return $this->_userCarComponentRepository->create($userCarComponentEntity);
     }
 }

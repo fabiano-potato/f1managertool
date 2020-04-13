@@ -6,7 +6,7 @@ namespace App\Models\Entities;
  * Class CarComponentEntity
  * @package App\Models\Entities
  */
-final class CarComponentEntity extends AbstractEntity
+class CarComponentEntity extends AbstractEntity
 {
     const TYPE_BRAKES = 1;
     const TYPE_GEARBOX = 2;

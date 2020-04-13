@@ -4,6 +4,12 @@ namespace App\Services\Comparers;
 
 use App\Models\Entities\AbstractEntity;
 
+/**
+ * Class AbstractComparer
+ * @package App\Services\Comparers
+ *
+ * This abstract class sets up the foundation for comparing two entities of the same type.
+ */
 abstract class AbstractComparer
 {
     /**
