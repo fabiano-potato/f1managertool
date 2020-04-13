@@ -20,13 +20,6 @@ class DriverLevelRepository extends AbstractEloquentRepository implements Driver
     protected $_mapper = null;
 
     /**
-     * Whether to include and return the parent Driver
-     *
-     * @var bool
-     */
-    protected $_includeDriver = false;
-
-    /**
      * DriverRepository constructor.
      */
     public function __construct() {
@@ -49,19 +42,6 @@ class DriverLevelRepository extends AbstractEloquentRepository implements Driver
     }
 
     /**
-     * Set whether to include the parent Driver in the returned entities.
-     * Defaults to true.
-     *
-     * @param bool $include
-     * @return self
-     */
-    public function includeDriver($include = true): self
-    {
-        $this->_includeDriver = $include;
-        return $this;
-    }
-
-    /**
      * Get all DriverLevelEntities
      *
      * @return array of DriverLevelEntities
@@ -78,6 +58,17 @@ class DriverLevelRepository extends AbstractEloquentRepository implements Driver
             $return[] = $this->_mapToEntity($driverLevelModel);
         }
         return $return;
+    }
+
+    /**
+     * Get the first entity from an all() result
+     *
+     * @return DriverLevelEntity|null
+     */
+    public function findOne(): ?DriverLevelEntity
+    {
+        $results = $this->all();
+        return ($results) ? $results[0] : null;
     }
 
     /**

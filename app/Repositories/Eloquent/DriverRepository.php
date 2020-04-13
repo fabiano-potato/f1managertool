@@ -55,6 +55,17 @@ class DriverRepository extends AbstractEloquentRepository implements DriverRepos
     }
 
     /**
+     * Get the first entity from an all() result
+     *
+     * @return DriverEntity|null
+     */
+    public function findOne(): ?DriverEntity
+    {
+        $results = $this->all();
+        return ($results) ? $results[0] : null;
+    }
+
+    /**
      * Find entity by its Id
      *
      * @param $id

@@ -118,7 +118,10 @@ class CarComponentGroupEntity
                 $carComponentEntity = $this->_carComponentRepository->findById($userCarComponentEntity->getCarComponentId());
                 $carComponentLevelEntity = $this->_carComponentLevelRepository->filterByCarComponentId($carComponentEntity->getCarComponentId())
                     ->filterByLevel($userCarComponentEntity->getCurrentLevel())
-                    ->all()[0];
+                    ->findOne();
+                if (!$carComponentLevelEntity) {
+                    throw new \RuntimeException('CarComponentLevelEntity not found.');
+                }
                 $carComponentEntity->setActiveCarComponentLevel($carComponentLevelEntity);
                 $userCarComponentIds[] = $userCarComponentEntity->getCarComponentId();
 

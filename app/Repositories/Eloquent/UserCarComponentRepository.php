@@ -3,7 +3,6 @@
 namespace App\Repositories\Eloquent;
 
 use App\Contracts\Repositories\CarComponentRepositoryInterface;
-use App\Models\Entities\CarComponentLevelEntity;
 use \App\Models\Entities\UserCarComponentEntity;
 use \App\Contracts\Repositories\UserCarComponentRepositoryInterface;
 use \App\Models\Eloquent\EloquentUserCarComponentModel;
@@ -50,10 +49,7 @@ class UserCarComponentRepository extends AbstractEloquentRepository implements U
 
         if ($this->_filters) {
             $query = EloquentUserCarComponentModel::Query();
-
-            $this->_filter($query, 'user_id', $this->_filters['user_id'] ?: null);
-            $this->_filter($query, 'car_component_type', $this->_filters['car_component_type'] ?: null);
-
+            $this->_applyFilters($query);
             $results = $query->get();
         }
         else {
@@ -65,6 +61,17 @@ class UserCarComponentRepository extends AbstractEloquentRepository implements U
             $entities[] =$this->_mapToEntity($userCarComponentsModel);
         }
         return $entities;
+    }
+
+    /**
+     * Get the first entity from an all() result
+     *
+     * @return UserCarComponentEntity|null
+     */
+    public function findOne(): ?UserCarComponentEntity
+    {
+        $results = $this->all();
+        return ($results) ? $results[0] : null;
     }
 
     /**
@@ -109,10 +116,10 @@ class UserCarComponentRepository extends AbstractEloquentRepository implements U
     /**
      * Filter query by userId
      *
-     * @param int $userId
+     * @param mixed $userId
      * @return UserCarComponentRepository
      */
-    public function filterUserId(int $userId): self
+    public function filterUserId($userId): self
     {
         $this->_filters['user_id'] = $userId;
         return $this;
@@ -121,61 +128,61 @@ class UserCarComponentRepository extends AbstractEloquentRepository implements U
     /**
      * Filter query by car_component_type
      *
-     * @param int $type
+     * @param mixed $type
      * @return UserCarComponentRepository
      */
-    public function filterCarComponentType(int $type): self
+    public function filterCarComponentType($type): self
     {
         $this->_filters['car_component_type'] = $type;
         return $this;
     }
 
     /**
-     * Set a CarComponent as assigned for a user.
-     * This will unassign any preexisting CarComponents that are assigned to the user for the same type.
+     * Filter by array or int of ids
      *
-     * @param CarComponentLevelEntity $carComponentLevelEntity
-     * @param $userId
-     * @param bool $isAssigned
-     * @return bool
+     * @param mixed $id
+     * @return UserCarComponentRepository
      */
-    public function setCarComponentLevelForUser(CarComponentLevelEntity $carComponentLevelEntity, $userId, $isAssigned = false): bool
+    public function filterCarComponentId($id): self
     {
-        // Get CarComponent
-        $carComponentEntity = $this->_carComponentRepository->findById($carComponentLevelEntity->getCarComponentId());
-
-        if ($isAssigned) {
-            // Unassign any preexisting CarComponents for the given type
-            EloquentUserCarComponentModel::where(
-                ['user_id' => $userId, 'car_component_type' => $carComponentEntity->getType()]
-            )->update(['is_assigned' => false]);
-        }
-        else {
-            die('not assigned');
-        }
-
-        // Create or Update UserCarComponent
-        $result = EloquentUserCarComponentModel::updateOrCreate(
-            ['user_id' => $userId, 'car_component_id' => $carComponentEntity->getCarComponentId()],
-            [
-                'car_component_type' => $carComponentEntity->getType(),
-                'is_assigned' => $isAssigned,
-                'current_level' => $carComponentLevelEntity->getLevel(),
-            ]
-        );
-
-        return (bool) $result;
+        $this->_filters['car_component_id'] = $id;
+        return $this;
     }
 
     /**
-     * Get the currently selected (or highest level user enabled) CarComponentLevelEntity for a CarComponent & User
+     * Unassign any preexisting CarComponents for the given type
      *
      * @param $userId
-     * @param $carComponent
-     * @return CarComponentLevelEntity|null
+     * @param $type
+     * @return UserCarComponentRepository
      */
-    public function getActiveCarComponentLevelForUser($userId, $carComponent): ?CarComponentLevelEntity
+    public function unassignComponentsForType(int $userId, int $type): self
     {
-//        CarComponentLevel::
+        EloquentUserCarComponentModel::where(
+            ['user_id' => $userId, 'car_component_type' => $type]
+        )->update(['is_assigned' => false]);
+        return $this;
+    }
+
+    /**
+     * Update an existing UserCarComponentEntity
+     *
+     * @param UserCarComponentEntity $entity
+     * @return bool
+     */
+    public function update(UserCarComponentEntity &$entity): bool
+    {
+        $modelProperties = $this->_mapper->toModel($entity)->toArray();
+
+        // Filter out some properties we don't want updated
+        unset($modelProperties['created_at']);
+        unset($modelProperties['user_car_components_id']);
+        unset($modelProperties['user_id']);
+
+        // Set the updated_at timestamp
+        $modelProperties['updated_at'] = date('Y-m-d H:i:s');
+
+        return EloquentUserCarComponentModel::where('user_car_components_id', $entity->getUserCarComponentsId())
+            ->update($modelProperties);
     }
 }

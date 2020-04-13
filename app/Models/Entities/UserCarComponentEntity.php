@@ -45,7 +45,7 @@ class UserCarComponentEntity extends AbstractEntity
      *
      * @var int
      */
-    protected $_currentUpgradePoints;
+    protected $_currentUpgradePoints = 0;
 
     /**
      * The current unlocked level for this component

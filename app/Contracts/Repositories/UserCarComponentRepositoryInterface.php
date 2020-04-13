@@ -19,6 +19,13 @@ interface UserCarComponentRepositoryInterface
     public function all(): array;
 
     /**
+     * Get the first result from all()
+     *
+     * @return UserCarComponentEntity
+     */
+    public function findOne(): ?UserCarComponentEntity;
+
+    /**
      * Find entity by its Id
      *
      * @param mixed $id
@@ -37,16 +44,41 @@ interface UserCarComponentRepositoryInterface
     /**
      * Filter query by userId
      *
-     * @param int $userId
+     * @param mixed $userId int or array of ids to filter by
      * @return UserCarComponentRepository
      */
-    public function filterUserId(int $userId): UserCarComponentRepository;
+    public function filterUserId($userId): UserCarComponentRepository;
 
     /**
      * Filter query by car_component_type
      *
-     * @param int $type
+     * @param mixed $type int or array of types to filter by
      * @return UserCarComponentRepository
      */
-    public function filterCarComponentType(int $type): UserCarComponentRepository;
+    public function filterCarComponentType($type): UserCarComponentRepository;
+
+    /**
+     * Filter result(s) by car_component_id
+     *
+     * @param mixed $id int or array of ids to filter by
+     * @return UserCarComponentRepository
+     */
+    public function filterCarComponentId($id): UserCarComponentRepository;
+
+    /**
+     * Unassign any preexisting CarComponents for the given type
+     *
+     * @param $userId
+     * @param $type
+     * @return UserCarComponentRepository
+     */
+    public function unassignComponentsForType(int $userId, int $type): UserCarComponentRepository;
+
+    /**
+     * Update an existing UserCarComponentEntity
+     *
+     * @param UserCarComponentEntity $entity
+     * @return bool
+     */
+    public function update(UserCarComponentEntity &$entity): bool;
 }

@@ -18,6 +18,13 @@ interface DriverRepositoryInterface
     public function all(): array;
 
     /**
+     * Get the first entity from an all() result
+     *
+     * @return DriverEntity|null
+     */
+    public function findOne(): ?DriverEntity;
+
+    /**
      * Find entity by its Id
      *
      * @param mixed $id

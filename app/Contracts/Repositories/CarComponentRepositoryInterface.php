@@ -19,6 +19,13 @@ interface CarComponentRepositoryInterface
     public function all(): array;
 
     /**
+     * Get the first entity from an all() result
+     *
+     * @return CarComponentEntity|null
+     */
+    public function findOne(): ?CarComponentEntity;
+
+    /**
      * Find entity by it's Id
      *
      * @param mixed $id

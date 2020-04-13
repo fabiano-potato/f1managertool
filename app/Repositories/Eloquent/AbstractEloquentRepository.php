@@ -29,6 +29,9 @@ abstract class AbstractEloquentRepository
             // Update the entity with saved model data (e.g primary key, timestamps)
             $entity = $this->_mapper->toEntity($model, $entity);
         }
+        else {
+            throw new \RuntimeException('Failed saving new entity.');
+        }
 
         return $result;
     }
@@ -71,5 +74,20 @@ abstract class AbstractEloquentRepository
         else {
             $query->where($dbColumnName, '<>', $filterValue);
         }
+    }
+
+    /**
+     * Apply filters to query. Assumes the filter_key is the same as the db column name.
+     *
+     * @param Builder $query
+     * @return $this
+     */
+    protected function _applyFilters(Builder &$query): self
+    {
+        // TODO: Update filtering to handle different types of filters. E.g. not* gt/lt etc
+        foreach ($this->_filters as $k => $v) {
+            $this->_filter($query, $k, $v);
+        }
+        return $this;
     }
 }

@@ -49,10 +49,7 @@ class CarComponentLevelRepository extends AbstractEloquentRepository implements 
     {
         if ($this->_filters) {
             $query = EloquentCarComponentLevelModel::query();
-
-            $this->_filter($query, 'car_component_id', $this->_filters['car_component_id']);
-            $this->_filter($query, 'level', $this->_filters['level']);
-
+            $this->_applyFilters($query);
             $results = $query->get();
         }
         else {
@@ -68,6 +65,17 @@ class CarComponentLevelRepository extends AbstractEloquentRepository implements 
             $return[] = $this->_mapToEntity($carComponentLevelModel);
         }
         return $return;
+    }
+
+    /**
+     * Get the first CarComponentLevelEntity from an all() result
+     *
+     * @return CarComponentLevelEntity|null
+     */
+    public function findOne(): ?CarComponentLevelEntity
+    {
+        $results = $this->all();
+        return ($results) ? $results[0] : null;
     }
 
     /**

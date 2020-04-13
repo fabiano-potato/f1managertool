@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\CarComponents\CarComponentUpgrader;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -15,6 +16,18 @@ class ServicesServiceProvider extends ServiceProvider
      *
      * @var array
      */
-    public $bindings = [
-    ];
+    public $bindings = [];
+
+    /**
+     * Register any application services
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->bind('CarComponentUpgrader', function() {
+            // TODO: Inject the $user object
+            return new CarComponentUpgrader();
+        });
+    }
 }

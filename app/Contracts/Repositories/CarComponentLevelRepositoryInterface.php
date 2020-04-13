@@ -14,9 +14,16 @@ interface CarComponentLevelRepositoryInterface
     /**
      * Find entities
      *
-     * @return array of CarComponentEntity objects
+     * @return array of CarComponentLevelEntity objects
      */
     public function all(): array;
+
+    /**
+     * Get the first result from all()
+     *
+     * @return CarComponentLevelEntity
+     */
+    public function findOne(): ?CarComponentLevelEntity;
 
     /**
      * Find entity by it's Id

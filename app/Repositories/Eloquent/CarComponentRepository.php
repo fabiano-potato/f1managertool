@@ -81,6 +81,17 @@ class CarComponentRepository extends AbstractEloquentRepository implements CarCo
     }
 
     /**
+     * Get the first entity from an all() result
+     *
+     * @return CarComponentEntity|null
+     */
+    public function findOne(): ?CarComponentEntity
+    {
+        $results = $this->all();
+        return ($results) ? $results[0] : null;
+    }
+
+    /**
      * Find entity by its Id
      *
      * @param $id

@@ -55,6 +55,7 @@ Class UserCarComponentMapper extends AbstractEloquentMapper
     {
         /* @var EloquentUserCarComponentModel $model */
         $model = parent::_toModel($entity, new EloquentUserCarComponentModel());
+        $model->is_assigned = $entity->isAssigned();
         return $model;
     }
 }
