@@ -35,15 +35,6 @@ interface CarComponentLevelRepositoryInterface
     public function create(CarComponentLevelEntity &$entity): bool;
 
     /**
-     * Set whether to include the parent CarComponent in the returned entities.
-     * Defaults to true.
-     *
-     * @param bool $include
-     * @return CarComponentLevelRepository
-     */
-    public function includeCarComponent($include = true): CarComponentLevelRepository;
-
-    /**
      * Add query filter on car_component_id
      *
      * @param array|int $filterValue

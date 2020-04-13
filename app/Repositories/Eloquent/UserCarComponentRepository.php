@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Facades\CarComponent;
+use App\Contracts\Repositories\CarComponentRepositoryInterface;
 use App\Models\Entities\CarComponentLevelEntity;
 use \App\Models\Entities\UserCarComponentEntity;
 use \App\Contracts\Repositories\UserCarComponentRepositoryInterface;
@@ -28,9 +28,16 @@ class UserCarComponentRepository extends AbstractEloquentRepository implements U
     protected $_filters = [];
 
     /**
-     * UserCarComponentsRepository constructor.
+     * @var CarComponentRepositoryInterface
      */
-    public function __construct(){
+    protected $_carComponentRepository;
+
+    /**
+     * UserCarComponentsRepository constructor.
+     * @param CarComponentRepositoryInterface $carComponentRepository
+     */
+    public function __construct(CarComponentRepositoryInterface $carComponentRepository){
+        $this->_carComponentRepository = $carComponentRepository;
         $this->_mapper = new UserCarComponentMapper();
     }
 
@@ -135,7 +142,7 @@ class UserCarComponentRepository extends AbstractEloquentRepository implements U
     public function setCarComponentLevelForUser(CarComponentLevelEntity $carComponentLevelEntity, $userId, $isAssigned = false): bool
     {
         // Get CarComponent
-        $carComponentEntity = CarComponent::findById($carComponentLevelEntity->getCarComponentId());
+        $carComponentEntity = $this->_carComponentRepository->findById($carComponentLevelEntity->getCarComponentId());
 
         if ($isAssigned) {
             // Unassign any preexisting CarComponents for the given type

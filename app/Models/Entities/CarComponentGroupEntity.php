@@ -2,9 +2,9 @@
 
 namespace App\Models\Entities;
 
-use App\Facades\CarComponent;
-use App\Facades\CarComponentLevel;
-use App\Facades\UserCarComponent;
+use App\Contracts\Repositories\CarComponentLevelRepositoryInterface;
+use App\Contracts\Repositories\CarComponentRepositoryInterface;
+use App\Contracts\Repositories\UserCarComponentRepositoryInterface;
 use App\Services\Comparers\CarComponentLevelComparer;
 
 class CarComponentGroupEntity
@@ -46,12 +46,37 @@ class CarComponentGroupEntity
     protected $_assignedCarComponentLevel;
 
     /**
+     * @var CarComponentRepositoryInterface
+     */
+    protected $_carComponentRepository;
+
+    /**
+     * @var CarComponentLevelRepositoryInterface
+     */
+    protected $_carComponentLevelRepository;
+
+    /**
+     * @var UserCarComponentRepositoryInterface
+     */
+    protected $_userCarComponentRepository;
+
+    /**
      * CarComponentGroupEntity constructor.
+     * @param CarComponentRepositoryInterface $carComponentRepository
+     * @param CarComponentLevelRepositoryInterface $carComponentLevelRepository
+     * @param UserCarComponentRepositoryInterface $userCarComponentRepository
      * @param int $carComponentType
      * @param int|null $userId
      */
-    public function __construct(int $carComponentType, int $userId = null)
+    public function __construct(CarComponentRepositoryInterface $carComponentRepository,
+                                CarComponentLevelRepositoryInterface $carComponentLevelRepository,
+                                UserCarComponentRepositoryInterface $userCarComponentRepository,
+                                int $carComponentType,
+                                int $userId = null)
     {
+        $this->_carComponentRepository = $carComponentRepository;
+        $this->_carComponentLevelRepository = $carComponentLevelRepository;
+        $this->_userCarComponentRepository = $userCarComponentRepository;
         $this->_userId = $userId;
         $this->_carComponentType = $carComponentType;
         $this->_setName($carComponentType)
@@ -84,14 +109,14 @@ class CarComponentGroupEntity
 
         if ($this->_userId) {
             // Get the UserCarComponents already saved to the User
-            $userCarComponents = UserCarComponent::filterUserId($this->_userId)
+            $userCarComponents = $this->_userCarComponentRepository->filterUserId($this->_userId)
                 ->filterCarComponentType($this->_carComponentType)->all();
 
             /* @var UserCarComponentEntity $userCarComponentEntity */
             foreach ($userCarComponents as $userCarComponentEntity) {
                 /* @var CarComponentEntity $carComponentEntity */
-                $carComponentEntity = CarComponent::findById($userCarComponentEntity->getCarComponentId());
-                $carComponentLevelEntity = CarComponentLevel::filterByCarComponentId($carComponentEntity->getCarComponentId())
+                $carComponentEntity = $this->_carComponentRepository->findById($userCarComponentEntity->getCarComponentId());
+                $carComponentLevelEntity = $this->_carComponentLevelRepository->filterByCarComponentId($carComponentEntity->getCarComponentId())
                     ->filterByLevel($userCarComponentEntity->getCurrentLevel())
                     ->all()[0];
                 $carComponentEntity->setActiveCarComponentLevel($carComponentLevelEntity);
@@ -108,12 +133,12 @@ class CarComponentGroupEntity
         }
 
         // Get all the CarComponent Entities for the Group
-        $carComponentEntities = CarComponent::filterType($this->_carComponentType)
+        $carComponentEntities = $this->_carComponentRepository->filterType($this->_carComponentType)
             ->filterNotCarComponentIds($userCarComponentIds)->all();
 
         foreach ($carComponentEntities as $carComponentEntity) {
             $carComponentEntity->setActiveCarComponentLevel(
-                CarComponentLevel::filterByCarComponentId($carComponentEntity->getCarComponentId())
+                $this->_carComponentLevelRepository->filterByCarComponentId($carComponentEntity->getCarComponentId())
                     ->filterByLevel(1)
                     ->all()[0]
             );

@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Facades\CarComponentLevel;
+use App\Contracts\Repositories\CarComponentLevelRepositoryInterface;
 use \App\Models\Entities\CarComponentEntity;
 use \App\Contracts\Repositories\CarComponentRepositoryInterface;
 use \App\Models\Eloquent\EloquentCarComponentModel;
@@ -34,9 +34,16 @@ class CarComponentRepository extends AbstractEloquentRepository implements CarCo
     protected $_filters = [];
 
     /**
-     * CarComponentRepository constructor.
+     * @var CarComponentLevelRepositoryInterface
      */
-    public function __construct(){
+    protected $_carComponentLevelRepository;
+
+    /**
+     * CarComponentRepository constructor.
+     * @param CarComponentLevelRepositoryInterface $carComponentLevelRepository
+     */
+    public function __construct(CarComponentLevelRepositoryInterface $carComponentLevelRepository){
+        $this->_carComponentLevelRepository = $carComponentLevelRepository;
         $this->_mapper = new CarComponentMapper();
     }
 
@@ -111,7 +118,7 @@ class CarComponentRepository extends AbstractEloquentRepository implements CarCo
         $carComponentEntity = $this->_mapper->toEntity($carComponentModel);
         if ($this->_includeCarComponentLevels) {
             $carComponentEntity->setCarComponentLevels(
-                CarComponentLevel::findForCarComponent($carComponentEntity)
+                $this->_carComponentLevelRepository->findForCarComponent($carComponentEntity)
             );
         }
 

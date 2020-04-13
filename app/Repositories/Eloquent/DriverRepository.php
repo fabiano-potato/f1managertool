@@ -2,8 +2,8 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Contracts\Repositories\DriverLevelRepositoryInterface;
 use App\Contracts\Repositories\DriverRepositoryInterface;
-use App\Facades\DriverLevel;
 use App\Models\Eloquent\EloquentDriverModel;
 use App\Models\Entities\DriverEntity;
 use App\Models\Mappers\Eloquent\DriverMapper;
@@ -27,9 +27,16 @@ class DriverRepository extends AbstractEloquentRepository implements DriverRepos
     protected $_includeDriverLevels = false;
 
     /**
-     * DriverRepository constructor.
+     * @var DriverLevelRepositoryInterface
      */
-    public function __construct(){
+    protected $_driverLevelRepository;
+
+    /**
+     * DriverRepository constructor.
+     * @param DriverLevelRepositoryInterface $driverLevelRepository
+     */
+    public function __construct(DriverLevelRepositoryInterface $driverLevelRepository){
+        $this->_driverLevelRepository = $driverLevelRepository;
         $this->_mapper = new DriverMapper();
     }
 
@@ -85,7 +92,7 @@ class DriverRepository extends AbstractEloquentRepository implements DriverRepos
         $driverEntity = $this->_mapper->toEntity($driverModel);
         if ($this->_includeDriverLevels) {
             $driverEntity->setDriverLevels(
-                DriverLevel::findForDriver($driverEntity)
+                $this->_driverLevelRepository->findForDriver($driverEntity)
             );
         }
 

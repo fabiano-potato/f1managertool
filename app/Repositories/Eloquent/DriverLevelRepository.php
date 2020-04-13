@@ -2,7 +2,6 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Facades\Driver;
 use App\Models\Entities\DriverEntity;
 use \App\Models\Entities\DriverLevelEntity;
 use \App\Contracts\Repositories\DriverLevelRepositoryInterface;
@@ -122,14 +121,6 @@ class DriverLevelRepository extends AbstractEloquentRepository implements Driver
     protected function _mapToEntity(EloquentDriverLevelModel $driverLevelModel): DriverLevelEntity
     {
         /* @var DriverLevelEntity $driverLevelEntity */
-        $driverLevelEntity = $this->_mapper->toEntity($driverLevelModel);
-
-        if ($this->_includeDriver) {
-            $driverLevelEntity->setDriverEntity(
-                Driver::findById($driverLevelEntity->getDriverId())
-            );
-        }
-
-        return $driverLevelEntity;
+        return $this->_mapper->toEntity($driverLevelModel);
     }
 }

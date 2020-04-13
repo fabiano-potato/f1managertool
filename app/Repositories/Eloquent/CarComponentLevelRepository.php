@@ -2,7 +2,6 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Facades\CarComponent;
 use App\Models\Entities\CarComponentEntity;
 use \App\Models\Entities\CarComponentLevelEntity;
 use \App\Contracts\Repositories\CarComponentLevelRepositoryInterface;
@@ -141,12 +140,6 @@ class CarComponentLevelRepository extends AbstractEloquentRepository implements 
     {
         /* @var CarComponentLevelEntity $carComponentLevelEntity */
         $carComponentLevelEntity = $this->_mapper->toEntity($carComponentLevelModel);
-
-        if ($this->_includeCarComponent) {
-            $carComponentLevelEntity->setCarComponentEntity(
-                CarComponent::findById($carComponentLevelEntity->getCarComponentId())
-            );
-        }
 
         return $carComponentLevelEntity;
     }
