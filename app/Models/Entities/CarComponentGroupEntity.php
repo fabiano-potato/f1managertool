@@ -7,7 +7,7 @@ use App\Contracts\Repositories\CarComponentRepositoryInterface;
 use App\Contracts\Repositories\UserCarComponentRepositoryInterface;
 use App\Services\Comparers\CarComponentLevelComparer;
 
-class CarComponentGroupEntity
+class CarComponentGroupEntity extends AbstractEntity
 {
     /**
      * The type of car component for this group

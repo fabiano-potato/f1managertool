@@ -6,6 +6,7 @@ use App\Contracts\Repositories\CarComponentLevelRepositoryInterface;
 use \App\Models\Entities\CarComponentEntity;
 use \App\Contracts\Repositories\CarComponentRepositoryInterface;
 use \App\Models\Eloquent\EloquentCarComponentModel;
+use App\Models\Entities\CarComponentLevelEntity;
 use App\Models\Mappers\Eloquent\CarComponentMapper;
 
 /**
@@ -75,7 +76,7 @@ class CarComponentRepository extends AbstractEloquentRepository implements CarCo
 
         foreach ($results as $carComponentModel)
         {
-            $entities[] =$this->_mapToEntity($carComponentModel);
+            $entities[$carComponentModel->car_component_id] =$this->_mapToEntity($carComponentModel);
         }
         return $entities;
     }
@@ -128,9 +129,12 @@ class CarComponentRepository extends AbstractEloquentRepository implements CarCo
         /* @var CarComponentEntity $carComponentEntity */
         $carComponentEntity = $this->_mapper->toEntity($carComponentModel);
         if ($this->_includeCarComponentLevels) {
-            $carComponentEntity->setCarComponentLevels(
-                $this->_carComponentLevelRepository->findForCarComponent($carComponentEntity)
-            );
+            $carComponentLevels = [];
+            /* @var CarComponentLevelEntity $carComponentLevel */
+            foreach ($this->_carComponentLevelRepository->findForCarComponent($carComponentEntity) as $carComponentLevel) {
+                $carComponentLevels[$carComponentLevel->getLevel()] = $carComponentLevel;
+            }
+            $carComponentEntity->setCarComponentLevels($carComponentLevels);
         }
 
         return $carComponentEntity;
