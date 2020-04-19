@@ -83,12 +83,3 @@
         }
     }
 </script>
-
-<style>
-    .compare .diff[data-positive^="true"] {
-        color: green;
-    }
-    .compare .diff[data-negative^="true"] {
-        color: red;
-    }
-</style>

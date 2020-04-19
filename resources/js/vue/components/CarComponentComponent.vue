@@ -26,15 +26,3 @@
         }
     }
 </script>
-
-<style>
-    .car-component {
-        border: 1px solid #ccc;
-    }
-    .car-component .title {
-        font-size: 1.2rem;
-    }
-    .car-component[data-active^="1"] {
-        background: yellow;
-    }
-</style>

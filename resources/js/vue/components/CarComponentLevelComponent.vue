@@ -1,5 +1,5 @@
 <template>
-<div class="car-component-level" :data-can-purchase="canPurchase(carComponentId)">
+<div class="car-component-level" :data-can-purchase="canUpgrade(carComponentId)">
     <i class="upgrade-indicator fa fa-angle-double-up" v-if="canUpgrade(carComponentId)"></i>
     <h3 class="title row text-center">
         <i class="prev fa fa-caret-down" v-on:click="browseDownComponentLevel(carComponentId)"
@@ -8,39 +8,40 @@
         <i class="next fa fa-caret-up" v-on:click="browseUpComponentLevel(carComponentId)"
            :data-disabled="!(isComponentLevelBrowsable(carComponentId, 1))"></i>
     </h3>
+    <div class="display-table">
+        <div class="current-level-points">
+            <div class="current-level">
+                {{ storeState.getViewedCarComponentLevel(carComponentId).level }}
+            </div>
+            <div class="current-points">
+                <span  v-if="!storeState.isEnabledCarComponentLevel(carComponentId)">
+                    <input class="requiredPoints" type="text" value="0"
+                           v-model="currentUpgradePoints"/>/{{ getRequiredUpgradePoints(carComponentId) }}*
+                </span>
+            </div>
+        </div>
+    </div>
     <table>
-        <tr>
-            <td colspan="3">
-                <h5 class="clearfix">
-                    <span class="current-level">{{ storeState.getViewedCarComponentLevel(carComponentId).level }}</span>
-                    <span class="pull-right" v-if="!storeState.isEnabledCarComponentLevel(carComponentId)">
-                        <input class="requiredPoints" type="text" value="0"
-                            v-model="currentUpgradePoints"/>/{{ getRequiredUpgradePoints(carComponentId) }}*
-                    </span>
-                </h5>
-            </td>
-        </tr>
-
         <car-component-level-stat name="Power" attr="statPower" :carComponentId="carComponentId"></car-component-level-stat>
         <car-component-level-stat name="Aero" attr="statAero" :carComponentId="carComponentId"></car-component-level-stat>
         <car-component-level-stat name="Grip" attr="statGrip" :carComponentId="carComponentId"></car-component-level-stat>
         <car-component-level-stat name="Reliability" attr="statReliability" :carComponentId="carComponentId"></car-component-level-stat>
         <car-component-level-stat name="Pit Stop" attr="statPitStop" :carComponentId="carComponentId"></car-component-level-stat>
-
-        <tr v-if="!storeState.isEnabledCarComponentLevel(carComponentId)">
-            <td colspan="3" class="text-center">
-                <button v-on:click="purchase(carComponentId)">
-                    Purchase ${{ new Intl.NumberFormat('en-AU').format(getPurchasePrice(carComponentId)) }}
-                </button>
-            </td>
-        </tr>
-
-        <tr v-if="!storeState.isActiveCarComponent(carComponentId)">
-            <td class="text-center" colspan="3">
-                <button v-on:click="storeState.setActiveCarComponent(carComponentId)">Assign to Car</button>
-            </td>
-        </tr>
     </table>
+
+    <div class="text-center d-block" v-if="!storeState.isActiveCarComponent(carComponentId)">
+        <button v-on:click="storeState.setActiveCarComponent(carComponentId)">Assign to Car</button>
+    </div>
+
+    <div class="text-center d-block" v-if="storeState.isActiveCarComponent(carComponentId)">
+        <button>Currently Assigned</button>
+    </div>
+
+    <div class="text-center purchase" v-if="!storeState.isEnabledCarComponentLevel(carComponentId)">
+        <button class="d-block" v-on:click="purchase(carComponentId)">
+            Purchase ${{ new Intl.NumberFormat('en-AU').format(getPurchasePrice(carComponentId)) }}
+        </button>
+    </div>
 </div>
 </template>
 
@@ -243,51 +244,3 @@
         }
     }
 </script>
-
-<style>
-    table {
-        width: 100%;
-    }
-    .title {
-        font-size: 1.1rem;
-        display: block;
-    }
-    .title .fa {
-        display: inline-block;
-        line-height: 1.2em;
-        width: 1.2em;
-        background: #f0f0f0;
-    }
-    .title .next {
-        float: right;
-    }
-    .title .prev {
-        float: left;
-    }
-    input.requiredPoints {
-        width: 60px;
-        display: inline-block;
-        text-align: right;
-        border: 0 none;
-    }
-
-    .car-component-level button {
-        opacity: 0.5;
-    }
-
-    .car-component-level[data-can-purchase^="true"] button {
-        opacity: 1;
-    }
-
-    .upgrade-indicator {
-        position: absolute;
-        left: 1.4em;
-        top: -0.6em;
-        width: 1.2em;
-        line-height: 1.2em;
-        font-weight: bold;
-        text-align: center;
-        background: #ccc;
-        color: white;
-    }
-</style>

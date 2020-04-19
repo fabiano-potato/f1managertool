@@ -1,0 +1,157 @@
+.car-component {
+    background: $dark-grey;
+    color: $grey;
+    border: 2px solid $background-light;
+
+    input {
+        background: transparent;
+        color: inherit;
+        border-bottom: 1px solid transparent;
+        &:hover {
+            border-bottom-color: $grey;
+        }
+    }
+
+    .title {
+        font-size: 1.1rem;
+        display: block;
+        color: $white;
+        padding: 0.5em;
+
+        // Up/Down buttons
+        .fa {
+            display: inline-block;
+            line-height: 1.2em;
+            width: 1.2em;
+            color: $grey;
+            background: transparent;
+
+            &[data-disabled^="true"] {
+                opacity: 0.2;
+            }
+
+            &:hover {
+                color: $white;
+                cursor: pointer;
+            }
+        }
+        .next {
+            float: right;
+        }
+        .prev {
+            float: left;
+        }
+    }
+
+    button {
+        margin: 0.3em 0;
+        display: block;
+        width: 100%;
+        background: $grey;
+        border-color: $grey;
+        color: $black;
+        font-weight: 600;
+    }
+
+    .display-table {
+        width: 100%;
+        display: table;
+    }
+
+    .current-level-points {
+        display: table-row;
+
+        .current-level, .current-points {
+            display: table-cell;
+            background-color: $grey;
+            color: $black;
+            text-align: center;
+        }
+
+        .current-level {
+            width: 2em;
+            border-right: 4px solid $dark-grey;
+        }
+
+        .current-points {
+            text-align: right;
+        }
+
+        input.requiredPoints {
+            width: 60px;
+            display: inline-block;
+            text-align: right;
+            border: 0 none;
+        }
+    }
+
+    // Active/Currently Assigned to Car
+    &[data-active^="1"] {
+        background-color: $light-grey;
+        color: $dark-grey;
+
+        table, .title {
+            color: $dark-grey;
+        }
+    }
+
+    // Can Upgrade/Purchase overrides
+    [data-can-purchase^="true"] {
+        .current-level, .current-points {
+            background: $bright-green;
+            color: $black;
+        }
+
+        .purchase {
+            button {
+                background-color: $bright-green;
+                border-color: $bright-green;
+            }
+        }
+    }
+
+    // Car Component Level
+    table {
+        width: 100%;
+        color: $grey;
+    }
+    tr {
+        border-bottom: 2px solid $black;
+    }
+    th {
+        font-weight: 500;
+    }
+
+    .car-component-level button {
+        opacity: 0.5;
+    }
+
+    .car-component-level[data-can-purchase^="true"] button {
+        opacity: 1;
+    }
+
+    .upgrade-indicator {
+        font-size: 1.2rem;
+        position: absolute;
+        left: 1.4em;
+        top: -0.3em;
+        width: 1.2em;
+        line-height: 1.2em;
+        font-weight: bold;
+        text-align: center;
+        background: $bright-green;
+        color: $black;
+    }
+
+    // Compare Column
+    .compare {
+        .diff[data-positive^="true"] {
+            font-weight: bold;
+            color: $bright-green;
+        }
+        .diff[data-negative^="true"] {
+            font-weight: bold;
+            color: red;
+        }
+    }
+}
