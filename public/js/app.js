@@ -101,7 +101,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -128,6 +127,9 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../store.js */ "./resources/js/store.js");
 /* harmony import */ var _CarComponentLevelStatComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CarComponentLevelStatComponent */ "./resources/js/vue/components/CarComponentLevelStatComponent.vue");
+//
+//
+//
 //
 //
 //
@@ -234,7 +236,10 @@ __webpack_require__.r(__webpack_exports__);
           currentEnabledLevel: 1 // default to 1
 
         };
-      }
+      } // Update local storage
+
+
+      localStorage['car_component_' + carComponentId + '_level_currentView'] = nextLevel;
     },
 
     /*
@@ -327,16 +332,47 @@ __webpack_require__.r(__webpack_exports__);
      * @return boolean
      */
     canUpgrade: function canUpgrade(carComponentId) {
+      if (this.currentUpgradePoints === 0) {
+        return false;
+      }
+
       var carComponentLevel = _store_js__WEBPACK_IMPORTED_MODULE_0__["store"].state.getEnabledCarComponentLevel(carComponentId); // Get next level and check if eligible for upgrade
 
       var nextCarComponentLevel = _store_js__WEBPACK_IMPORTED_MODULE_0__["store"].state.carComponents[carComponentId].carComponentLevels[carComponentLevel.level + 1];
 
       if (!nextCarComponentLevel) {
         return false;
-      } // Check Upgrade Points
+      } // Check Upgrade Points (explicitly pass the nextCarComponentLevel level).
 
 
-      if (nextCarComponentLevel.requiredUpgradePoints > this.currentUpgradePoints) {
+      if (this.getRequiredUpgradePoints(nextCarComponentLevel.carComponentId, nextCarComponentLevel.level) > this.currentUpgradePoints) {
+        return false;
+      } // TODO: Check Price
+
+
+      return true;
+    },
+
+    /**
+     * Whether this level for the CarComponent can be upgraded
+     * @param carComponentId
+     * @return boolean
+     */
+    canUpgradeCurrentLevel: function canUpgradeCurrentLevel(carComponentId, level) {
+      if (this.currentUpgradePoints === 0) {
+        return false;
+      }
+
+      var carComponentLevel = _store_js__WEBPACK_IMPORTED_MODULE_0__["store"].state.getEnabledCarComponentLevel(carComponentId); // Get next level and check if eligible for upgrade
+
+      var nextCarComponentLevel = _store_js__WEBPACK_IMPORTED_MODULE_0__["store"].state.carComponents[carComponentId].carComponentLevels[carComponentLevel.level + 1];
+
+      if (!nextCarComponentLevel) {
+        return false;
+      } // Check Upgrade Points (don't pass 2nd param, default to currently viewed level).
+
+
+      if (this.getRequiredUpgradePoints(nextCarComponentLevel.carComponentId) > this.currentUpgradePoints) {
         return false;
       } // TODO: Check Price
 
@@ -361,6 +397,13 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       this.currentUpgradePoints -= this.getRequiredUpgradePoints(carComponentId, level);
+    },
+
+    /**
+     * Update the LocalStorage for the current upgrade points for this component
+     */
+    updateCurrentUpgradePointsLocalStorage: function updateCurrentUpgradePointsLocalStorage() {
+      localStorage['car_component_' + this.carComponentId + '_currentUpgradePoints'] = this.currentUpgradePoints;
     }
   },
   components: {
@@ -44279,7 +44322,7 @@ var render = function() {
   return _c(
     "div",
     {
-      staticClass: "car-component col col-xs-6 col-sm-4 col-md-3 col-lg",
+      staticClass: "car-component col col-sm-6 col-lg-3 col-xl",
       attrs: {
         "data-active": _vm.storeState.isActiveCarComponent(_vm.carComponentId)
           ? 1
@@ -44331,7 +44374,7 @@ var render = function() {
       _c(
         "div",
         {
-          staticClass: "car-components row d-lg-flex justify-content-lg-center"
+          staticClass: "car-components row d-xl-flex justify-content-xl-center"
         },
         _vm._l(_vm.group.carComponentIds, function(id) {
           return _c("car-component", { attrs: { carComponentId: id } })
@@ -44364,8 +44407,6 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c("h2", { staticClass: "text-center" }, [_vm._v("Car Components")]),
-    _vm._v(" "),
     _c(
       "div",
       { staticClass: "groups" },
@@ -44405,7 +44446,9 @@ var render = function() {
     "div",
     {
       staticClass: "car-component-level",
-      attrs: { "data-can-purchase": _vm.canUpgrade(_vm.carComponentId) }
+      attrs: {
+        "data-can-purchase": _vm.canUpgradeCurrentLevel(_vm.carComponentId)
+      }
     },
     [
       _vm.canUpgrade(_vm.carComponentId)
@@ -44458,36 +44501,46 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "current-points" }, [
-            !_vm.storeState.isEnabledCarComponentLevel(_vm.carComponentId)
-              ? _c("span", [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.currentUpgradePoints,
-                        expression: "currentUpgradePoints"
-                      }
-                    ],
-                    staticClass: "requiredPoints",
-                    attrs: { type: "text", value: "0" },
-                    domProps: { value: _vm.currentUpgradePoints },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.currentUpgradePoints = $event.target.value
-                      }
+            _c("span", [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.currentUpgradePoints,
+                    expression: "currentUpgradePoints"
+                  }
+                ],
+                staticClass: "requiredPoints",
+                attrs: { type: "text", value: "0" },
+                domProps: { value: _vm.currentUpgradePoints },
+                on: {
+                  focus: function($event) {
+                    return $event.target.select()
+                  },
+                  change: _vm.updateCurrentUpgradePointsLocalStorage,
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
                     }
-                  }),
-                  _vm._v(
-                    "/" +
+                    _vm.currentUpgradePoints = $event.target.value
+                  }
+                }
+              }),
+              _vm._v("/"),
+              !_vm.storeState.isEnabledCarComponentLevel(_vm.carComponentId)
+                ? _c("span", [
+                    _vm._v(
                       _vm._s(_vm.getRequiredUpgradePoints(_vm.carComponentId)) +
-                      "*\n                "
-                  )
-                ])
-              : _vm._e()
+                        "*"
+                    )
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.storeState.isEnabledCarComponentLevel(_vm.carComponentId)
+                ? _c("span", [_vm._v("-")])
+                : _vm._e()
+            ])
           ])
         ])
       ]),
@@ -44868,6 +44921,7 @@ var store = {
     cars: {
       1: {
         carComponents: {
+          // TODO: Load from local storage
           "1": {
             carComponentId: 2,
             level: 1
@@ -44904,8 +44958,28 @@ var store = {
      * Initiate this class
      */
     init: function init() {
+      this.initActiveCarComponents();
       this.initUserCarComponents();
+      console.log(this.cars);
       return this;
+    },
+
+    /**
+     * Initiate the active car components
+     */
+    initActiveCarComponents: function initActiveCarComponents() {
+      for (var carIndex in this.cars) {
+        for (var type in this.cars[carIndex].carComponents) {
+          // Check for local storage
+          var lsKeyId = 'car_' + carIndex + '_' + type + '_carComponentId';
+          var lsKeyLevel = 'car_' + carIndex + '_' + type + '_level';
+
+          if (localStorage[lsKeyId] && localStorage[lsKeyLevel]) {
+            this.cars[carIndex].carComponents[type].carComponentId = parseInt(localStorage[lsKeyId]);
+            this.cars[carIndex].carComponents[type].level = parseInt(localStorage[lsKeyLevel]);
+          }
+        }
+      }
     },
 
     /**
@@ -44918,15 +44992,20 @@ var store = {
           currentEnabledLevel: 1,
           currentViewLevel: 1,
           currentUpgradePoints: 0
-        };
-      } // Set non default user state.
+        }; // Update form local storage
 
+        if (localStorage['car_component_' + id + '_level_enabled']) {
+          this.userCarComponents[id].currentEnabledLevel = parseInt(localStorage['car_component_' + id + '_level_enabled']);
+        }
 
-      this.userCarComponents[3] = {
-        currentEnabledLevel: 2,
-        currentViewLevel: 4,
-        currentUpgradePoints: 300
-      };
+        if (localStorage['car_component_' + id + '_level_currentView']) {
+          this.userCarComponents[id].currentViewLevel = parseInt(localStorage['car_component_' + id + '_level_currentView']);
+        }
+
+        if (localStorage['car_component_' + id + '_currentUpgradePoints']) {
+          this.userCarComponents[id].currentUpgradePoints = parseInt(localStorage['car_component_' + id + '_currentUpgradePoints']);
+        }
+      }
     },
 
     /**
@@ -44945,7 +45024,11 @@ var store = {
           currentEnabledLevel: level,
           currentViewLevel: level
         };
-      }
+      } // Update local storage
+
+
+      localStorage['car_component_' + carComponentId + '_level_enabled'] = level;
+      localStorage['car_component_' + carComponentId + '_level_currentView'] = level;
     },
 
     /**
@@ -44957,13 +45040,16 @@ var store = {
 
       if (!carComponent) {
         return false;
-      } // Update the current car's active component for this component type
+      }
 
+      var level = this.getViewedCarComponentLevel(carComponentId).level; // Update the current car's active component for this component type
 
       this.cars[this.activeCar].carComponents[carComponent.type] = {
         carComponentId: carComponentId,
-        level: this.getViewedCarComponentLevel(carComponentId).level
-      }; // Update the enabled level for this user's car component
+        level: level
+      };
+      localStorage['car_' + this.activeCar + '_' + carComponent.type + '_carComponentId'] = carComponentId;
+      localStorage['car_' + this.activeCar + '_' + carComponent.type + '_level'] = level; // Update the enabled level for this user's car component
 
       this.setEnabledCarComponentLevel(carComponentId, this.getEnabledComponentLevelValue(carComponentId));
     },

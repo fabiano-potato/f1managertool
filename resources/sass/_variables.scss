@@ -12,3 +12,11 @@ $background-light: #cbd2de;
 $color-highlight: $bright-green;
 
 $body-bg: $background-light;
+
+$grid-breakpoints: (
+    xs: 0,
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    xl: 1390px
+) !default;

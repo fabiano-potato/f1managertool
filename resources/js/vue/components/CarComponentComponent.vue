@@ -1,5 +1,5 @@
 <template>
-    <div class="car-component col col-xs-6 col-sm-4 col-md-3 col-lg"
+    <div class="car-component col col-sm-6 col-lg-3 col-xl"
          :data-active="storeState.isActiveCarComponent(carComponentId) ? 1 : 0">
         <div class="car-component-levels">
             <car-component-level-component

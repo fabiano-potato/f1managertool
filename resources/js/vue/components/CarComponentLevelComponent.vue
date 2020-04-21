@@ -1,5 +1,5 @@
 <template>
-<div class="car-component-level" :data-can-purchase="canUpgrade(carComponentId)">
+<div class="car-component-level" :data-can-purchase="canUpgradeCurrentLevel(carComponentId)">
     <i class="upgrade-indicator fa fa-angle-double-up" v-if="canUpgrade(carComponentId)"></i>
     <h3 class="title row text-center">
         <i class="prev fa fa-caret-down" v-on:click="browseDownComponentLevel(carComponentId)"
@@ -14,9 +14,12 @@
                 {{ storeState.getViewedCarComponentLevel(carComponentId).level }}
             </div>
             <div class="current-points">
-                <span  v-if="!storeState.isEnabledCarComponentLevel(carComponentId)">
+                <span>
                     <input class="requiredPoints" type="text" value="0"
-                           v-model="currentUpgradePoints"/>/{{ getRequiredUpgradePoints(carComponentId) }}*
+                           v-model="currentUpgradePoints"
+                           @focus="$event.target.select()"
+                            v-on:change="updateCurrentUpgradePointsLocalStorage"/>/<span v-if="!storeState.isEnabledCarComponentLevel(carComponentId)">{{ getRequiredUpgradePoints(carComponentId) }}*</span>
+                        <span v-if="storeState.isEnabledCarComponentLevel(carComponentId)">-</span>
                 </span>
             </div>
         </div>
@@ -110,6 +113,9 @@
                         currentEnabledLevel: 1, // default to 1
                     };
                 }
+
+                // Update local storage
+                localStorage['car_component_' + carComponentId + '_level_currentView'] = nextLevel;
             },
 
             /*
@@ -202,6 +208,10 @@
              */
             canUpgrade(carComponentId)
             {
+                if (this.currentUpgradePoints === 0) {
+                    return false;
+                }
+
                 let carComponentLevel = store.state.getEnabledCarComponentLevel(carComponentId);
 
                 // Get next level and check if eligible for upgrade
@@ -210,8 +220,37 @@
                     return false;
                 }
 
-                // Check Upgrade Points
-                if (nextCarComponentLevel.requiredUpgradePoints > this.currentUpgradePoints) {
+                // Check Upgrade Points (explicitly pass the nextCarComponentLevel level).
+                if (this.getRequiredUpgradePoints(nextCarComponentLevel.carComponentId, nextCarComponentLevel.level) > this.currentUpgradePoints) {
+                    return false;
+                }
+
+                // TODO: Check Price
+
+                return true;
+            },
+
+            /**
+             * Whether this level for the CarComponent can be upgraded
+             * @param carComponentId
+             * @return boolean
+             */
+            canUpgradeCurrentLevel(carComponentId, level)
+            {
+                if (this.currentUpgradePoints === 0) {
+                    return false;
+                }
+
+                let carComponentLevel = store.state.getEnabledCarComponentLevel(carComponentId);
+
+                // Get next level and check if eligible for upgrade
+                let nextCarComponentLevel = store.state.carComponents[carComponentId].carComponentLevels[carComponentLevel.level + 1];
+                if (!nextCarComponentLevel) {
+                    return false;
+                }
+
+                // Check Upgrade Points (don't pass 2nd param, default to currently viewed level).
+                if (this.getRequiredUpgradePoints(nextCarComponentLevel.carComponentId) > this.currentUpgradePoints) {
                     return false;
                 }
 
@@ -237,6 +276,14 @@
                     return;
                 }
                 this.currentUpgradePoints -= this.getRequiredUpgradePoints(carComponentId, level);
+            },
+
+            /**
+             * Update the LocalStorage for the current upgrade points for this component
+             */
+            updateCurrentUpgradePointsLocalStorage()
+            {
+                localStorage['car_component_' + this.carComponentId + '_currentUpgradePoints'] = this.currentUpgradePoints;
             }
         },
         components: {

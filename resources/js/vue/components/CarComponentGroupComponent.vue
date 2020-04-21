@@ -2,7 +2,7 @@
     <div class="row car-component-group">
         <div class="col">
             <h2 class="group-title text-center">{{ group.name }}</h2>
-            <div class="car-components row d-lg-flex justify-content-lg-center">
+            <div class="car-components row d-xl-flex justify-content-xl-center">
                 <car-component v-for="(id) in group.carComponentIds"
                                v-bind:carComponentId="id"
                 ></car-component>

@@ -5,6 +5,7 @@ export const store = {
         cars: {
             1: {
                 carComponents: {
+                    // TODO: Load from local storage
                     "1": {
                         carComponentId: 2,
                         level: 1,
@@ -42,8 +43,28 @@ export const store = {
          */
         init()
         {
+            this.initActiveCarComponents();
             this.initUserCarComponents();
+            console.log(this.cars);
             return this;
+        },
+
+        /**
+         * Initiate the active car components
+         */
+        initActiveCarComponents()
+        {
+            for(let carIndex in this.cars){
+                for (let type in this.cars[carIndex].carComponents) {
+                    // Check for local storage
+                    let lsKeyId = 'car_' + carIndex + '_' + type + '_carComponentId';
+                    let lsKeyLevel = 'car_' + carIndex + '_' + type + '_level';
+                    if (localStorage[lsKeyId] && localStorage[lsKeyLevel]) {
+                        this.cars[carIndex].carComponents[type].carComponentId = parseInt(localStorage[lsKeyId]);
+                        this.cars[carIndex].carComponents[type].level = parseInt(localStorage[lsKeyLevel]);
+                    }
+                }
+            }
         },
 
         /**
@@ -58,13 +79,17 @@ export const store = {
                     currentViewLevel: 1,
                     currentUpgradePoints: 0,
                 }
-            }
 
-            // Set non default user state.
-            this.userCarComponents[3] = {
-                currentEnabledLevel: 2,
-                currentViewLevel: 4,
-                currentUpgradePoints: 300,
+                // Update form local storage
+                if (localStorage['car_component_' + id + '_level_enabled']) {
+                    this.userCarComponents[id].currentEnabledLevel = parseInt(localStorage['car_component_' + id + '_level_enabled']);
+                }
+                if (localStorage['car_component_' + id + '_level_currentView']) {
+                    this.userCarComponents[id].currentViewLevel = parseInt(localStorage['car_component_' + id + '_level_currentView']);
+                }
+                if (localStorage['car_component_' + id + '_currentUpgradePoints']) {
+                    this.userCarComponents[id].currentUpgradePoints = parseInt(localStorage['car_component_' + id + '_currentUpgradePoints']);
+                }
             }
         },
 
@@ -87,6 +112,10 @@ export const store = {
                     currentViewLevel: level,
                 }
             }
+
+            // Update local storage
+            localStorage['car_component_' + carComponentId + '_level_enabled'] = level;
+            localStorage['car_component_' + carComponentId + '_level_currentView'] = level;
         },
 
         /**
@@ -100,11 +129,16 @@ export const store = {
                 return false;
             }
 
+            let level = this.getViewedCarComponentLevel(carComponentId).level;
+
             // Update the current car's active component for this component type
             this.cars[this.activeCar].carComponents[carComponent.type] = {
                 carComponentId: carComponentId,
-                level: this.getViewedCarComponentLevel(carComponentId).level,
+                level: level,
             };
+
+            localStorage['car_' + this.activeCar + '_' + carComponent.type + '_carComponentId'] = carComponentId;
+            localStorage['car_' + this.activeCar + '_' + carComponent.type + '_level'] = level;
 
             // Update the enabled level for this user's car component
             this.setEnabledCarComponentLevel(carComponentId, this.getEnabledComponentLevelValue(carComponentId))
