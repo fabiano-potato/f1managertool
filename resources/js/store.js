@@ -30,7 +30,14 @@ export const store = {
                         carComponentId: 41,
                         level: 1
                     },
-                }
+                },
+                stats: {
+                    statPower: 0,
+                    statAero: 0,
+                    statGrip: 0,
+                    statReliability: 0,
+                    statPitStop: 0.00,
+                },
             }
         },
         // The current car user is viewing/configuring
@@ -45,7 +52,7 @@ export const store = {
         {
             this.initActiveCarComponents();
             this.initUserCarComponents();
-            console.log(this.cars);
+            this.setCarStats();
             return this;
         },
 
@@ -91,6 +98,41 @@ export const store = {
                     this.userCarComponents[id].currentUpgradePoints = parseInt(localStorage['car_component_' + id + '_currentUpgradePoints']);
                 }
             }
+        },
+
+        /**
+         * Initialise a car's stats based on the currently assigned components.
+         * @param carId
+         */
+        setCarStats(carId)
+        {
+            if (!carId) {
+                carId = this.activeCar;
+            }
+
+            let car = this.cars[carId];
+
+            // Loop the different car component types and add their stats
+            for (let type in car.carComponents) {
+                let carComponentId = car.carComponents[type].carComponentId;
+                let level = car.carComponents[type].level;
+                let carComponentLevel = this.carComponents[carComponentId].carComponentLevels[level];
+                car.stats.statPower += carComponentLevel.statPower;
+                car.stats.statAero += carComponentLevel.statAero;
+                car.stats.statGrip += carComponentLevel.statGrip;
+                car.stats.statReliability += carComponentLevel.statReliability;
+                car.stats.statPitStop += carComponentLevel.statPitStop;
+            }
+        },
+
+        /**
+         * Get a value for a car stat
+         * @param attr
+         * @returns {*}
+         */
+        getCurrentStat(attr)
+        {
+            return this.cars[this.activeCar].stats[attr];
         },
 
         /**
@@ -141,7 +183,9 @@ export const store = {
             localStorage['car_' + this.activeCar + '_' + carComponent.type + '_level'] = level;
 
             // Update the enabled level for this user's car component
-            this.setEnabledCarComponentLevel(carComponentId, this.getEnabledComponentLevelValue(carComponentId))
+            this.setEnabledCarComponentLevel(carComponentId, this.getEnabledComponentLevelValue(carComponentId));
+
+            this.setCarStats();
         },
 
         /**

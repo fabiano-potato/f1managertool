@@ -177,6 +177,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -225,6 +229,11 @@ __webpack_require__.r(__webpack_exports__);
 
       if (!_store_js__WEBPACK_IMPORTED_MODULE_0__["store"].state.carComponents[carComponentId].carComponentLevels[currentLevel + modifyValue]) {
         return false;
+      } // Ensure next level isn't lower than currently enabled level.
+
+
+      if (_store_js__WEBPACK_IMPORTED_MODULE_0__["store"].state.userCarComponents[carComponentId].currentEnabledLevel > currentLevel + modifyValue) {
+        return false;
       } // Update state for the CarComponentLevel
 
 
@@ -256,6 +265,11 @@ __webpack_require__.r(__webpack_exports__);
       var currentLevel = _store_js__WEBPACK_IMPORTED_MODULE_0__["store"].state.getViewedComponentLevelValue(carComponentId); // Ensure the next level exists
 
       if (!_store_js__WEBPACK_IMPORTED_MODULE_0__["store"].state.carComponents[carComponentId].carComponentLevels[currentLevel + modifyValue]) {
+        return false;
+      } // Ensure next level isn't lower than currently enabled level.
+
+
+      if (_store_js__WEBPACK_IMPORTED_MODULE_0__["store"].state.userCarComponents[carComponentId].currentEnabledLevel > currentLevel + modifyValue) {
         return false;
       }
 
@@ -423,6 +437,9 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../store.js */ "./resources/js/store.js");
+/* harmony import */ var vue_stacked_progress_bar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-stacked-progress-bar */ "./node_modules/vue-stacked-progress-bar/dist/vue-stacked-progress-bar.esm.js");
+//
+//
 //
 //
 //
@@ -438,6 +455,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['carComponentId', 'attr', 'name'],
   data: function data() {
@@ -445,7 +463,31 @@ __webpack_require__.r(__webpack_exports__);
       storeState: _store_js__WEBPACK_IMPORTED_MODULE_0__["store"].state
     };
   },
+  components: {
+    StackedProgressBar: vue_stacked_progress_bar__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
   methods: {
+    getProgressBarData: function getProgressBarData(carComponentId, attr) {
+      var currentValue = _store_js__WEBPACK_IMPORTED_MODULE_0__["store"].state.getCurrentStat(attr);
+      var diffValue = this.compare(carComponentId)[attr];
+      var diffColour = '#05f9b4';
+
+      if (diffValue < 0) {
+        diffColour = 'red'; // Minus the diff from the current value to reduce the bar
+
+        currentValue = parseInt(currentValue) + parseInt(diffValue);
+        diffValue = diffValue * -1;
+      }
+
+      return [{
+        percentage: currentValue,
+        color: '#b8b8b8'
+      }, {
+        percentage: diffValue,
+        color: diffColour
+      }];
+    },
+
     /**
      * Get whether the current attribute is greater than the current car's assigned component value of that attribute
      * @param carComponentId
@@ -44455,6 +44497,10 @@ var render = function() {
         ? _c("i", { staticClass: "upgrade-indicator fa fa-angle-double-up" })
         : _vm._e(),
       _vm._v(" "),
+      _vm.storeState.isActiveCarComponent(_vm.carComponentId)
+        ? _c("i", { staticClass: "current-indicator fa fa-check" })
+        : _vm._e(),
+      _vm._v(" "),
       _c("h3", { staticClass: "title row text-center" }, [
         _c("i", {
           staticClass: "prev fa fa-caret-down",
@@ -44486,6 +44532,8 @@ var render = function() {
           }
         })
       ]),
+      _vm._v(" "),
+      _vm._m(0),
       _vm._v(" "),
       _c("div", { staticClass: "display-table" }, [
         _c("div", { staticClass: "current-level-points" }, [
@@ -44546,7 +44594,7 @@ var render = function() {
       ]),
       _vm._v(" "),
       _c(
-        "table",
+        "div",
         [
           _c("car-component-level-stat", {
             attrs: {
@@ -44591,7 +44639,32 @@ var render = function() {
         1
       ),
       _vm._v(" "),
-      !_vm.storeState.isActiveCarComponent(_vm.carComponentId)
+      !_vm.storeState.isEnabledCarComponentLevel(_vm.carComponentId)
+        ? _c("div", { staticClass: "text-center purchase" }, [
+            _c(
+              "button",
+              {
+                staticClass: "d-block",
+                on: {
+                  click: function($event) {
+                    return _vm.purchase(_vm.carComponentId)
+                  }
+                }
+              },
+              [
+                _vm._v(
+                  "\n            Upgrade $" +
+                    _vm._s(
+                      new Intl.NumberFormat("en-AU").format(
+                        _vm.getPurchasePrice(_vm.carComponentId)
+                      )
+                    ) +
+                    "\n        "
+                )
+              ]
+            )
+          ])
+        : !_vm.storeState.isActiveCarComponent(_vm.carComponentId)
         ? _c("div", { staticClass: "text-center d-block" }, [
             _c(
               "button",
@@ -44607,44 +44680,22 @@ var render = function() {
               [_vm._v("Assign to Car")]
             )
           ])
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.storeState.isActiveCarComponent(_vm.carComponentId)
-        ? _c("div", { staticClass: "text-center d-block" }, [
-            _c("button", [_vm._v("Currently Assigned")])
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      !_vm.storeState.isEnabledCarComponentLevel(_vm.carComponentId)
-        ? _c("div", { staticClass: "text-center purchase" }, [
-            _c(
-              "button",
-              {
-                staticClass: "d-block",
-                on: {
-                  click: function($event) {
-                    return _vm.purchase(_vm.carComponentId)
-                  }
-                }
-              },
-              [
-                _vm._v(
-                  "\n            Purchase $" +
-                    _vm._s(
-                      new Intl.NumberFormat("en-AU").format(
-                        _vm.getPurchasePrice(_vm.carComponentId)
-                      )
-                    ) +
-                    "\n        "
-                )
-              ]
-            )
-          ])
         : _vm._e()
     ]
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "class rare row" }, [
+      _c("div", { staticClass: "col" }, [
+        _vm._v("\n            Rare\n        ")
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -44666,43 +44717,46 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("tr", { staticClass: "compare" }, [
-    _c("th", [_vm._v(_vm._s(_vm.name) + ":")]),
+  return _c("div", { staticClass: "stat-row" }, [
+    _c("span", { staticClass: "name" }, [_vm._v(_vm._s(_vm.name) + ":")]),
     _vm._v(" "),
-    _c("td", { staticClass: "text-right" }, [
-      _vm._v(
-        _vm._s(
-          _vm.storeState.getViewedCarComponentLevel(_vm.carComponentId)[
-            _vm.attr
-          ]
-        )
-      )
+    _c("span", { staticClass: "stat" }, [
+      _vm._v(_vm._s(_vm.storeState.getCurrentStat(_vm.attr)))
     ]),
     _vm._v(" "),
-    _c("td", { staticClass: "text-right" }, [
-      !_vm.storeState.isActiveCarComponent(_vm.carComponentId)
-        ? _c(
-            "span",
-            {
-              staticClass: "diff",
-              attrs: {
-                "data-positive": _vm.isGreater(_vm.carComponentId, _vm.attr),
-                "data-negative": _vm.isLessThan(_vm.carComponentId, _vm.attr)
-              }
-            },
-            [
-              _vm._v(
-                "\n            " +
-                  _vm._s(
-                    (_vm.isGreater(_vm.carComponentId, _vm.attr) ? "+" : "") +
-                      _vm.compare(_vm.carComponentId)[_vm.attr]
-                  ) +
-                  "\n        "
-              )
-            ]
-          )
-        : _vm._e()
-    ])
+    !_vm.storeState.isActiveCarComponent(_vm.carComponentId)
+      ? _c(
+          "span",
+          {
+            staticClass: "diff",
+            attrs: {
+              "data-positive": _vm.isGreater(_vm.carComponentId, _vm.attr),
+              "data-negative": _vm.isLessThan(_vm.carComponentId, _vm.attr)
+            }
+          },
+          [
+            _vm._v(
+              "\n            " +
+                _vm._s(
+                  (_vm.isGreater(_vm.carComponentId, _vm.attr) ? "+" : "") +
+                    _vm.compare(_vm.carComponentId)[_vm.attr]
+                ) +
+                "\n    "
+            )
+          ]
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "progress" },
+      [
+        _c("VueStackedProgressBar", {
+          attrs: { list: this.getProgressBarData(_vm.carComponentId, _vm.attr) }
+        })
+      ],
+      1
+    )
   ])
 }
 var staticRenderFns = []
@@ -44816,6 +44870,21 @@ function normalizeComponent (
   }
 }
 
+
+/***/ }),
+
+/***/ "./node_modules/vue-stacked-progress-bar/dist/vue-stacked-progress-bar.esm.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/vue-stacked-progress-bar/dist/vue-stacked-progress-bar.esm.js ***!
+  \************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(global) {function e(e){var r,l,o,f,d,c,u,b,h,p,g,m=[],y=[],v=[];if(r=(e=i(e.toLowerCase())).substr(0,1).toUpperCase(),l=e.substr(1),b=1,"R"!=r&&"Y"!=r&&"G"!=r&&"C"!=r&&"B"!=r&&"M"!=r&&"W"!=r||isNaN(l)||6==e.length&&-1==e.indexOf(",")||(e="ncol("+e+")"),3==e.length||6==e.length||isNaN(e)||(e="ncol("+e+")"),e.indexOf(",")>0&&-1==e.indexOf("(")&&(e="ncol("+e+")"),"rgb"==e.substr(0,3)||"hsl"==e.substr(0,3)||"hwb"==e.substr(0,3)||"ncol"==e.substr(0,4)||"cmyk"==e.substr(0,4)){if("ncol"==e.substr(0,4)?(4==e.split(",").length&&-1==e.indexOf("ncola")&&(e=e.replace("ncol","ncola")),o="ncol",e=e.substr(4)):"cmyk"==e.substr(0,4)?(o="cmyk",e=e.substr(4)):(o=e.substr(0,3),e=e.substr(3)),f=3,c=!1,"a"==e.substr(0,1).toLowerCase()?(f=4,c=!0,e=e.substr(1)):"cmyk"==o&&(f=4,5==e.split(",").length&&(f=5,c=!0)),m=(e=(e=e.replace("(","")).replace(")","")).split(","),"rgb"==o){if(m.length!=f)return{red:0,green:0,blue:0,hue:0,sat:0,lightness:0,whiteness:0,blackness:0,cyan:0,magenta:0,yellow:0,black:0,ncol:"R",opacity:1,valid:!1};for(d=0;d<f;d++){if(""!=m[d]&&" "!=m[d]||(m[d]="0"),m[d].indexOf("%")>-1&&(m[d]=m[d].replace("%",""),m[d]=Number(m[d]/100),d<3&&(m[d]=Math.round(255*m[d]))),isNaN(m[d]))return{red:0,green:0,blue:0,hue:0,sat:0,lightness:0,whiteness:0,blackness:0,cyan:0,magenta:0,yellow:0,black:0,ncol:"R",opacity:1,valid:!1};parseInt(m[d])>255&&(m[d]=255),d<3&&(m[d]=parseInt(m[d])),3==d&&Number(m[d])>1&&(m[d]=1)}g={r:m[0],g:m[1],b:m[2]},1==c&&(b=Number(m[3]))}if("hsl"==o||"hwb"==o||"ncol"==o){for(;m.length<f;)m.push("0");for("hsl"!=o&&"hwb"!=o||parseInt(m[0])>=360&&(m[0]=0),d=1;d<f;d++){if(m[d].indexOf("%")>-1){if(m[d]=m[d].replace("%",""),m[d]=Number(m[d]),isNaN(m[d]))return{red:0,green:0,blue:0,hue:0,sat:0,lightness:0,whiteness:0,blackness:0,cyan:0,magenta:0,yellow:0,black:0,ncol:"R",opacity:1,valid:!1};m[d]=m[d]/100}else m[d]=Number(m[d]);Number(m[d])>1&&(m[d]=1),Number(m[d])<0&&(m[d]=0)}"hsl"==o&&(g=t(m[0],m[1],m[2]),h=Number(m[0]),p=Number(m[1])),"hwb"==o&&(g=n(m[0],m[1],m[2])),"ncol"==o&&(g=function(e,a,t){var r,i,s;if(s=e,isNaN(e.substr(0,1))){if(r=e.substr(0,1).toUpperCase(),""==(i=e.substr(1))&&(i=0),i=Number(i),isNaN(i))return!1;"R"==r&&(s=0+.6*i),"Y"==r&&(s=60+.6*i),"G"==r&&(s=120+.6*i),"C"==r&&(s=180+.6*i),"B"==r&&(s=240+.6*i),"M"==r&&(s=300+.6*i),"W"==r&&(s=0,a=1-i/100,t=i/100)}return n(s,a,t)}(m[0],m[1],m[2])),1==c&&(b=Number(m[3]))}if("cmyk"==o){for(;m.length<f;)m.push("0");for(d=0;d<f;d++){if(m[d].indexOf("%")>-1){if(m[d]=m[d].replace("%",""),m[d]=Number(m[d]),isNaN(m[d]))return{red:0,green:0,blue:0,hue:0,sat:0,lightness:0,whiteness:0,blackness:0,cyan:0,magenta:0,yellow:0,black:0,ncol:"R",opacity:1,valid:!1};m[d]=m[d]/100}else m[d]=Number(m[d]);Number(m[d])>1&&(m[d]=1),Number(m[d])<0&&(m[d]=0)}g=function(e,a,t,r){var n,i,s;return n=255-255*Math.min(1,e*(1-r)+r),i=255-255*Math.min(1,a*(1-r)+r),s=255-255*Math.min(1,t*(1-r)+r),{r:n,g:i,b:s}}(m[0],m[1],m[2],m[3]),1==c&&(b=Number(m[4]))}}else if("ncs"==e.substr(0,3))g=function(e){var a,t,r,n,s,l,o,f,d,c,u,b,h,p,g,m,y;-1==(e=(e=(e=(e=(e=i(e).toUpperCase()).replace("(","")).replace(")","")).replace("NCS","NCS ")).replace(/  /g," ")).indexOf("NCS")&&(e="NCS "+e);if(null===(e=e.match(/^(?:NCS|NCS\sS)\s(\d{2})(\d{2})-(N|[A-Z])(\d{2})?([A-Z])?$/)))return!1;if(a=parseInt(e[1],10),t=parseInt(e[2],10),"N"!=(r=e[3])&&"Y"!=r&&"R"!=r&&"B"!=r&&"G"!=r)return!1;n=parseInt(e[4],10)||0,"N"!==r?(s=1.05*a-5.25,l=t,"Y"===r&&n<=60?d=1:"Y"===r&&n>60||"R"===r&&n<=80?(o="Y"===r?n-60:n+40,d=(Math.sqrt(14884-Math.pow(o,2))-22)/100):"R"===r&&n>80||"B"===r?d=0:"G"===r&&(o=n-170,d=(Math.sqrt(33800-Math.pow(o,2))-70)/100),"Y"===r&&n<=80?f=0:"Y"===r&&n>80||"R"===r&&n<=60?(o="Y"===r?n-80+20.5:n+20+20.5,f=(104-Math.sqrt(11236-Math.pow(o,2)))/100):"R"===r&&n>60||"B"===r&&n<=80?(o="R"===r?n-60-60:n+40-60,f=(Math.sqrt(1e4-Math.pow(o,2))-10)/100):"B"===r&&n>80||"G"===r&&n<=40?(o="B"===r?n-80-131:n+20-131,f=(122-Math.sqrt(19881-Math.pow(o,2)))/100):"G"===r&&n>40&&(f=0),"Y"===r?green1=(85-.85*n)/100:"R"===r&&n<=60?green1=0:"R"===r&&n>60?(o=n-60+35,green1=(67.5-Math.sqrt(5776-Math.pow(o,2)))/100):"B"===r&&n<=60?(o=1*n-68.5,green1=(6.5+Math.sqrt(7044.5-Math.pow(o,2)))/100):"B"===r&&n>60||"G"===r&&n<=60?green1=.9:"G"===r&&n>60&&(o=n-60,green1=(90-1/8*o)/100),o=(d+green1+f)/3,c=(o-d)*(100-l)/100+d,u=(o-green1)*(100-l)/100+green1,b=(o-f)*(100-l)/100+f,h=1/(c>u&&c>b?c:u>c&&u>b?u:b>c&&b>u?b:(c+u+b)/3),g=parseInt(c*h*(100-s)/100*255,10),m=parseInt(u*h*(100-s)/100*255,10),y=parseInt(b*h*(100-s)/100*255,10),g>255&&(g=255),m>255&&(m=255),y>255&&(y=255),g<0&&(g=0),m<0&&(m=0),y<0&&(y=0)):((p=parseInt(255*(1-a/100),10))>255&&(p=255),p<0&&(p=0),g=p,m=p,y=p);return{r:g,g:m,b:y}}(e);else{for(u=!1,y=a("names"),d=0;d<y.length;d++)if(e.toLowerCase()==y[d].toLowerCase()){v=a("hexs"),u=!0,g={r:parseInt(v[d].substr(0,2),16),g:parseInt(v[d].substr(2,2),16),b:parseInt(v[d].substr(4,2),16)};break}if(0==u){for(3==(e=e.replace("#","")).length&&(e=e.substr(0,1)+e.substr(0,1)+e.substr(1,1)+e.substr(1,1)+e.substr(2,1)+e.substr(2,1)),d=0;d<e.length;d++)if(!s(e.substr(d,1)))return{red:0,green:0,blue:0,hue:0,sat:0,lightness:0,whiteness:0,blackness:0,cyan:0,magenta:0,yellow:0,black:0,ncol:"R",opacity:1,valid:!1};for(m[0]=parseInt(e.substr(0,2),16),m[1]=parseInt(e.substr(2,2),16),m[2]=parseInt(e.substr(4,2),16),d=0;d<3;d++)if(isNaN(m[d]))return{red:0,green:0,blue:0,hue:0,sat:0,lightness:0,whiteness:0,blackness:0,cyan:0,magenta:0,yellow:0,black:0,ncol:"R",opacity:1,valid:!1};g={r:m[0],g:m[1],b:m[2]}}}return function(e,a,t,r){var n,i,s,l,o,f;if(!e)return{red:0,green:0,blue:0,hue:0,sat:0,lightness:0,whiteness:0,blackness:0,cyan:0,magenta:0,yellow:0,black:0,ncol:"R",opacity:1,valid:!1};a||(a=1);return n=function(e,a,t){var r,n,i,s,l,o,f=[];for(f[0]=e/255,f[1]=a/255,f[2]=t/255,r=f[0],n=f[0],l=0,i=0;i<f.length-1;i++)f[i+1]<=r&&(r=f[i+1]),f[i+1]>=n&&(n=f[i+1],l=i+1);return 0==l&&(o=(f[1]-f[2])/(n-r)),1==l&&(o=2+(f[2]-f[0])/(n-r)),2==l&&(o=4+(f[0]-f[1])/(n-r)),isNaN(o)&&(o=0),(o*=60)<0&&(o+=360),s=(r+n)/2,{h:o,s:r==n?0:s<.5?(n-r)/(n+r):(n-r)/(2-n-r),l:s}}(e.r,e.g,e.b),i=function(e,a,t){e/=255,a/=255,t/=255;var r=Math.max(e,a,t),n=Math.min(e,a,t),i=r-n;return{h:0==i?0:e==r?(a-t)/i%6*360:a==r?((t-e)/i+2)%6*360:((e-a)/i+4)%6*360,w:n,b:1-r}}(e.r,e.g,e.b),s=function(e,a,t){var r,n,i,s;e/=255,a/=255,t/=255;var l=Math.max(e,a,t);return 1==(s=1-l)?(r=0,n=0,i=0):(r=(1-e-s)/(1-s),n=(1-a-s)/(1-s),i=(1-t-s)/(1-s)),{c:r,m:n,y:i,k:s}}(e.r,e.g,e.b),o=t||n.h,f=r||n.s,l=function(e){for(;e>=360;)e-=360;return e<60?"R"+e/.6:e<120?"Y"+(e-60)/.6:e<180?"G"+(e-120)/.6:e<240?"C"+(e-180)/.6:e<300?"B"+(e-240)/.6:e<360?"M"+(e-300)/.6:void 0}(o),d={red:e.r,green:e.g,blue:e.b,hue:o,sat:f,lightness:n.l,whiteness:i.w,blackness:i.b,cyan:s.c,magenta:s.m,yellow:s.y,black:s.k,ncol:l,opacity:a,valid:!0},d.red=Number(d.red.toFixed(0)),d.green=Number(d.green.toFixed(0)),d.blue=Number(d.blue.toFixed(0)),d.hue=Number(d.hue.toFixed(0)),d.sat=Number(d.sat.toFixed(2)),d.lightness=Number(d.lightness.toFixed(2)),d.whiteness=Number(d.whiteness.toFixed(2)),d.blackness=Number(d.blackness.toFixed(2)),d.cyan=Number(d.cyan.toFixed(2)),d.magenta=Number(d.magenta.toFixed(2)),d.yellow=Number(d.yellow.toFixed(2)),d.black=Number(d.black.toFixed(2)),d.ncol=d.ncol.substr(0,1)+Math.round(Number(d.ncol.substr(1))),d.opacity=Number(d.opacity.toFixed(2)),d;var d}(g,b,h,p)}function a(e){return"names"==e?["AliceBlue","AntiqueWhite","Aqua","Aquamarine","Azure","Beige","Bisque","Black","BlanchedAlmond","Blue","BlueViolet","Brown","BurlyWood","CadetBlue","Chartreuse","Chocolate","Coral","CornflowerBlue","Cornsilk","Crimson","Cyan","DarkBlue","DarkCyan","DarkGoldenRod","DarkGray","DarkGrey","DarkGreen","DarkKhaki","DarkMagenta","DarkOliveGreen","DarkOrange","DarkOrchid","DarkRed","DarkSalmon","DarkSeaGreen","DarkSlateBlue","DarkSlateGray","DarkSlateGrey","DarkTurquoise","DarkViolet","DeepPink","DeepSkyBlue","DimGray","DimGrey","DodgerBlue","FireBrick","FloralWhite","ForestGreen","Fuchsia","Gainsboro","GhostWhite","Gold","GoldenRod","Gray","Grey","Green","GreenYellow","HoneyDew","HotPink","IndianRed","Indigo","Ivory","Khaki","Lavender","LavenderBlush","LawnGreen","LemonChiffon","LightBlue","LightCoral","LightCyan","LightGoldenRodYellow","LightGray","LightGrey","LightGreen","LightPink","LightSalmon","LightSeaGreen","LightSkyBlue","LightSlateGray","LightSlateGrey","LightSteelBlue","LightYellow","Lime","LimeGreen","Linen","Magenta","Maroon","MediumAquaMarine","MediumBlue","MediumOrchid","MediumPurple","MediumSeaGreen","MediumSlateBlue","MediumSpringGreen","MediumTurquoise","MediumVioletRed","MidnightBlue","MintCream","MistyRose","Moccasin","NavajoWhite","Navy","OldLace","Olive","OliveDrab","Orange","OrangeRed","Orchid","PaleGoldenRod","PaleGreen","PaleTurquoise","PaleVioletRed","PapayaWhip","PeachPuff","Peru","Pink","Plum","PowderBlue","Purple","RebeccaPurple","Red","RosyBrown","RoyalBlue","SaddleBrown","Salmon","SandyBrown","SeaGreen","SeaShell","Sienna","Silver","SkyBlue","SlateBlue","SlateGray","SlateGrey","Snow","SpringGreen","SteelBlue","Tan","Teal","Thistle","Tomato","Turquoise","Violet","Wheat","White","WhiteSmoke","Yellow","YellowGreen"]:"hexs"==e?["f0f8ff","faebd7","00ffff","7fffd4","f0ffff","f5f5dc","ffe4c4","000000","ffebcd","0000ff","8a2be2","a52a2a","deb887","5f9ea0","7fff00","d2691e","ff7f50","6495ed","fff8dc","dc143c","00ffff","00008b","008b8b","b8860b","a9a9a9","a9a9a9","006400","bdb76b","8b008b","556b2f","ff8c00","9932cc","8b0000","e9967a","8fbc8f","483d8b","2f4f4f","2f4f4f","00ced1","9400d3","ff1493","00bfff","696969","696969","1e90ff","b22222","fffaf0","228b22","ff00ff","dcdcdc","f8f8ff","ffd700","daa520","808080","808080","008000","adff2f","f0fff0","ff69b4","cd5c5c","4b0082","fffff0","f0e68c","e6e6fa","fff0f5","7cfc00","fffacd","add8e6","f08080","e0ffff","fafad2","d3d3d3","d3d3d3","90ee90","ffb6c1","ffa07a","20b2aa","87cefa","778899","778899","b0c4de","ffffe0","00ff00","32cd32","faf0e6","ff00ff","800000","66cdaa","0000cd","ba55d3","9370db","3cb371","7b68ee","00fa9a","48d1cc","c71585","191970","f5fffa","ffe4e1","ffe4b5","ffdead","000080","fdf5e6","808000","6b8e23","ffa500","ff4500","da70d6","eee8aa","98fb98","afeeee","db7093","ffefd5","ffdab9","cd853f","ffc0cb","dda0dd","b0e0e6","800080","663399","ff0000","bc8f8f","4169e1","8b4513","fa8072","f4a460","2e8b57","fff5ee","a0522d","c0c0c0","87ceeb","6a5acd","708090","708090","fffafa","00ff7f","4682b4","d2b48c","008080","d8bfd8","ff6347","40e0d0","ee82ee","f5deb3","ffffff","f5f5f5","ffff00","9acd32"]:void 0}function t(e,a,t){var n,i;return{r:255*r(n=2*t-(i=t<=.5?t*(a+1):t+a-t*a),i,(e/=60)+2),g:255*r(n,i,e),b:255*r(n,i,e-2)}}function r(e,a,t){return t<0&&(t+=6),t>=6&&(t-=6),t<1?(a-e)*t+e:t<3?a:t<4?(a-e)*(4-t)+e:e}function n(e,a,r){var n,i,s,l=[];for(i=t(e,1,.5),l[0]=i.r/255,l[1]=i.g/255,l[2]=i.b/255,(s=a+r)>1&&(a=Number((a/s).toFixed(2)),r=Number((r/s).toFixed(2))),n=0;n<3;n++)l[n]*=1-a-r,l[n]+=a,l[n]=Number(255*l[n]);return{r:l[0],g:l[1],b:l[2]}}function i(e){return e.replace(/^\s+|\s+$/g,"")}function s(e){return"0123456789ABCDEFabcdef".indexOf(e)>-1}var l={name:"VueStackedProgressBar",props:{list:{type:Array,default:null},striped:{type:Boolean,default:!1},labelLocation:{type:String,default:"inside"}},methods:{itemColor:function(a,t){if(a.color){var r=e(a.color),n=r.hue,i=100*r.sat,s=100*r.lightness,l=s>50?s-25:s+25,o=i>50?i-15:i+15;return a.striped?"background: repeating-linear-gradient(135deg, hsl("+n+", "+i+"%, "+s+"%), hsl("+n+", "+i+"%, "+s+"%) 10px, hsl("+n+", "+o+"%, "+l+"%) 10px, hsl("+n+", "+o+"%, "+l+"%) 15px);":"background-color:hsl("+n+", "+i+"%, "+s+"%);"}return a.striped?"background: repeating-linear-gradient(45deg, hsl(calc(360/"+(t+1)+"),50%,25%), hsl(calc(360/"+(t+1)+"),75%,25%) 10px,hsl(calc(360/"+(t+1)+"),50%,75%) 10px,hsl(calc(360/"+(t+1)+"),75%,75%) 20px);":"background-color:hsl(calc(360/"+(t+1)+"),50%,25%);"}}};var o=function(e,a,t,r,n,i,s,l,o,f){"boolean"!=typeof s&&(o=l,l=s,s=!1);var d,c="function"==typeof t?t.options:t;if(e&&e.render&&(c.render=e.render,c.staticRenderFns=e.staticRenderFns,c._compiled=!0,n&&(c.functional=!0)),r&&(c._scopeId=r),i?(d=function(e){(e=e||this.$vnode&&this.$vnode.ssrContext||this.parent&&this.parent.$vnode&&this.parent.$vnode.ssrContext)||"undefined"==typeof __VUE_SSR_CONTEXT__||(e=__VUE_SSR_CONTEXT__),a&&a.call(this,o(e)),e&&e._registeredComponents&&e._registeredComponents.add(i)},c._ssrRegister=d):a&&(d=s?function(){a.call(this,f(this.$root.$options.shadowRoot))}:function(e){a.call(this,l(e))}),d)if(c.functional){var u=c.render;c.render=function(e,a){return d.call(a),u(e,a)}}else{var b=c.beforeCreate;c.beforeCreate=b?[].concat(b,d):[d]}return t},f="undefined"!=typeof navigator&&/msie [6-9]\\b/.test(navigator.userAgent.toLowerCase());var d=document.head||document.getElementsByTagName("head")[0],c={};var u=o({render:function(){var e=this,a=e.$createElement,t=e._self._c||a;return t("div",[t("div",["outside"===e.labelLocation?t("div",{staticStyle:{float:"left","min-width":"100%","text-align":"center",display:"-webkit-box"}},e._l(e.list,function(a,r){return t("div",{key:r,staticClass:"barItem",style:" width:"+a.percentage+"%;"},[t("div",{staticStyle:{width:"100%",color:"#222"}},[t("span",{staticStyle:{"font-size":"14px","font-weight":"bold"}},[e._v(e._s(a.text))]),t("br"),e._v(" "),t("span",{staticStyle:{"font-size":"12px"}},[e._v(e._s(a.description))]),t("br"),e._v(" "),t("div",{staticClass:"line"}),e._v(" "),t("div",{staticClass:"circle"})])])}),0):e._e()]),e._v(" "),t("div",{staticClass:"main"},e._l(e.list,function(a,r){return t("div",{key:r,staticClass:"barItem",style:e.itemColor(a,r)+" width:"+a.percentage+"%;"},["inside"===e.labelLocation?t("span",{staticClass:"insideLabel"},[e._v(e._s(a.text))]):e._e()])}),0)])},staticRenderFns:[]},function(e){e&&e("data-v-fa914f76_0",{source:".main[data-v-fa914f76]{height:20px;min-width:100%;border-radius:8px;background-color:#fafafa;display:-webkit-box;overflow:hidden;float:left;border:solid 1px #e0e0e0;-moz-box-shadow:inset -2px 3px 6px 1px rgba(0,0,0,.42);box-shadow:inset -1px 1px 2px 1px #e0e0e0}.barItem[data-v-fa914f76]{font-size:12px;color:#fff;text-align:center;vertical-align:middle}.insideLabel[data-v-fa914f76]{background-color:#00007d;padding:3px;vertical-align:middle;font-weight:bolder}.outsiteLabel[data-v-fa914f76]{position:relative;top:200px;left:200px;color:#dc143c;z-index:90;display:block}.line[data-v-fa914f76]{width:4px;background-color:#778899;height:40px;border-radius:3px 3px 0 0;margin-left:calc(50% - 2px)}.circle[data-v-fa914f76]{width:10px;height:10px;border-radius:50%;margin-left:calc(50% - 5px);background-color:#778899}",map:void 0,media:void 0})},l,"data-v-fa914f76",!1,void 0,function(e){return function(e,a){return function(e,a){var t=f?a.media||"default":e,r=c[t]||(c[t]={ids:new Set,styles:[]});if(!r.ids.has(e)){r.ids.add(e);var n=a.source;if(a.map&&(n+="\n/*# sourceURL="+a.map.sources[0]+" */",n+="\n/*# sourceMappingURL=data:application/json;base64,"+btoa(unescape(encodeURIComponent(JSON.stringify(a.map))))+" */"),r.element||(r.element=document.createElement("style"),r.element.type="text/css",a.media&&r.element.setAttribute("media",a.media),d.appendChild(r.element)),"styleSheet"in r.element)r.styles.push(n),r.element.styleSheet.cssText=r.styles.filter(Boolean).join("\n");else{var i=r.ids.size-1,s=document.createTextNode(n),l=r.element.childNodes;l[i]&&r.element.removeChild(l[i]),l.length?r.element.insertBefore(s,l[i]):r.element.appendChild(s)}}}(e,a)}},void 0);function b(e){b.installed||(b.installed=!0,e.component("VueStackedProgressBar",u))}var h={install:b},p=null;"undefined"!=typeof window?p=window.Vue:"undefined"!=typeof global&&(p=global.Vue),p&&p.use(h),u.install=b;/* harmony default export */ __webpack_exports__["default"] = (u);
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
@@ -44946,6 +45015,13 @@ var store = {
             carComponentId: 41,
             level: 1
           }
+        },
+        stats: {
+          statPower: 0,
+          statAero: 0,
+          statGrip: 0,
+          statReliability: 0,
+          statPitStop: 0.00
         }
       }
     },
@@ -44960,7 +45036,7 @@ var store = {
     init: function init() {
       this.initActiveCarComponents();
       this.initUserCarComponents();
-      console.log(this.cars);
+      this.setCarStats();
       return this;
     },
 
@@ -45009,6 +45085,38 @@ var store = {
     },
 
     /**
+     * Initialise a car's stats based on the currently assigned components.
+     * @param carId
+     */
+    setCarStats: function setCarStats(carId) {
+      if (!carId) {
+        carId = this.activeCar;
+      }
+
+      var car = this.cars[carId]; // Loop the different car component types and add their stats
+
+      for (var type in car.carComponents) {
+        var carComponentId = car.carComponents[type].carComponentId;
+        var level = car.carComponents[type].level;
+        var carComponentLevel = this.carComponents[carComponentId].carComponentLevels[level];
+        car.stats.statPower += carComponentLevel.statPower;
+        car.stats.statAero += carComponentLevel.statAero;
+        car.stats.statGrip += carComponentLevel.statGrip;
+        car.stats.statReliability += carComponentLevel.statReliability;
+        car.stats.statPitStop += carComponentLevel.statPitStop;
+      }
+    },
+
+    /**
+     * Get a value for a car stat
+     * @param attr
+     * @returns {*}
+     */
+    getCurrentStat: function getCurrentStat(attr) {
+      return this.cars[this.activeCar].stats[attr];
+    },
+
+    /**
      * Set the current enabled (highest unlocked) CarComponentLevel for a CarComponent
      * @param carComponentId
      * @param level
@@ -45052,6 +45160,7 @@ var store = {
       localStorage['car_' + this.activeCar + '_' + carComponent.type + '_level'] = level; // Update the enabled level for this user's car component
 
       this.setEnabledCarComponentLevel(carComponentId, this.getEnabledComponentLevelValue(carComponentId));
+      this.setCarStats();
     },
 
     /**
@@ -45433,14 +45542,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!************************************************************************!*\
   !*** ./resources/js/vue/components/CarComponentLevelStatComponent.vue ***!
   \************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _CarComponentLevelStatComponent_vue_vue_type_template_id_200fb7b0___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CarComponentLevelStatComponent.vue?vue&type=template&id=200fb7b0& */ "./resources/js/vue/components/CarComponentLevelStatComponent.vue?vue&type=template&id=200fb7b0&");
 /* harmony import */ var _CarComponentLevelStatComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CarComponentLevelStatComponent.vue?vue&type=script&lang=js& */ "./resources/js/vue/components/CarComponentLevelStatComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _CarComponentLevelStatComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _CarComponentLevelStatComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -45470,7 +45580,7 @@ component.options.__file = "resources/js/vue/components/CarComponentLevelStatCom
 /*!*************************************************************************************************!*\
   !*** ./resources/js/vue/components/CarComponentLevelStatComponent.vue?vue&type=script&lang=js& ***!
   \*************************************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

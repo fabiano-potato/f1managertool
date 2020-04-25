@@ -1,6 +1,7 @@
 <template>
 <div class="car-component-level" :data-can-purchase="canUpgradeCurrentLevel(carComponentId)">
     <i class="upgrade-indicator fa fa-angle-double-up" v-if="canUpgrade(carComponentId)"></i>
+    <i class="current-indicator fa fa-check" v-if="storeState.isActiveCarComponent(carComponentId)"></i>
     <h3 class="title row text-center">
         <i class="prev fa fa-caret-down" v-on:click="browseDownComponentLevel(carComponentId)"
            :data-disabled="!(isComponentLevelBrowsable(carComponentId, -1))"></i>
@@ -8,6 +9,13 @@
         <i class="next fa fa-caret-up" v-on:click="browseUpComponentLevel(carComponentId)"
            :data-disabled="!(isComponentLevelBrowsable(carComponentId, 1))"></i>
     </h3>
+
+    <div class="class rare row">
+        <div class="col">
+            Rare
+        </div>
+    </div>
+
     <div class="display-table">
         <div class="current-level-points">
             <div class="current-level">
@@ -24,26 +32,22 @@
             </div>
         </div>
     </div>
-    <table>
+
+    <div>
         <car-component-level-stat name="Power" attr="statPower" :carComponentId="carComponentId"></car-component-level-stat>
         <car-component-level-stat name="Aero" attr="statAero" :carComponentId="carComponentId"></car-component-level-stat>
         <car-component-level-stat name="Grip" attr="statGrip" :carComponentId="carComponentId"></car-component-level-stat>
         <car-component-level-stat name="Reliability" attr="statReliability" :carComponentId="carComponentId"></car-component-level-stat>
         <car-component-level-stat name="Pit Stop" attr="statPitStop" :carComponentId="carComponentId"></car-component-level-stat>
-    </table>
-
-    <div class="text-center d-block" v-if="!storeState.isActiveCarComponent(carComponentId)">
-        <button v-on:click="storeState.setActiveCarComponent(carComponentId)">Assign to Car</button>
-    </div>
-
-    <div class="text-center d-block" v-if="storeState.isActiveCarComponent(carComponentId)">
-        <button>Currently Assigned</button>
     </div>
 
     <div class="text-center purchase" v-if="!storeState.isEnabledCarComponentLevel(carComponentId)">
         <button class="d-block" v-on:click="purchase(carComponentId)">
-            Purchase ${{ new Intl.NumberFormat('en-AU').format(getPurchasePrice(carComponentId)) }}
+            Upgrade ${{ new Intl.NumberFormat('en-AU').format(getPurchasePrice(carComponentId)) }}
         </button>
+    </div>
+    <div class="text-center d-block" v-else-if="!storeState.isActiveCarComponent(carComponentId)">
+        <button v-on:click="storeState.setActiveCarComponent(carComponentId)">Assign to Car</button>
     </div>
 </div>
 </template>
@@ -103,6 +107,11 @@
                     return false;
                 }
 
+                // Ensure next level isn't lower than currently enabled level.
+                if (store.state.userCarComponents[carComponentId].currentEnabledLevel > (currentLevel + modifyValue)) {
+                    return false;
+                }
+
                 // Update state for the CarComponentLevel
                 if (store.state.userCarComponents[carComponentId]) {
                     store.state.userCarComponents[carComponentId].currentViewLevel = currentLevel + modifyValue;
@@ -135,6 +144,12 @@
                 if (!store.state.carComponents[carComponentId].carComponentLevels[currentLevel + modifyValue]) {
                     return false;
                 }
+
+                // Ensure next level isn't lower than currently enabled level.
+                if (store.state.userCarComponents[carComponentId].currentEnabledLevel > (currentLevel + modifyValue)) {
+                    return false;
+                }
+
                 return true;
             },
 

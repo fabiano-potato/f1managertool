@@ -1,19 +1,22 @@
 <template>
-    <tr class="compare">
-        <th>{{ name }}:</th>
-        <td class="text-right">{{ storeState.getViewedCarComponentLevel(carComponentId)[attr] }}</td>
-        <td class="text-right">
-            <span class="diff" v-if="!storeState.isActiveCarComponent(carComponentId)"
-                :data-positive="isGreater(carComponentId, attr)"
-                :data-negative="isLessThan(carComponentId, attr)">
+    <div class="stat-row">
+        <span class="name">{{ name }}:</span>
+        <span class="stat">{{ storeState.getCurrentStat(attr) }}</span>
+        <span class="diff" v-if="!storeState.isActiveCarComponent(carComponentId)"
+              :data-positive="isGreater(carComponentId, attr)"
+              :data-negative="isLessThan(carComponentId, attr)">
                 {{(isGreater(carComponentId, attr) ? "+" : "") + compare(carComponentId)[attr] }}
-            </span>
-        </td>
-    </tr>
+        </span>
+
+        <div class="progress">
+            <VueStackedProgressBar :list="this.getProgressBarData(carComponentId, attr)"></VueStackedProgressBar>
+        </div>
+    </div>
 </template>
 
 <script>
     import { store } from "../../store.js";
+    import StackedProgressBar from 'vue-stacked-progress-bar';
 
     export default {
         props: ['carComponentId', 'attr', 'name'],
@@ -22,7 +25,28 @@
                 storeState: store.state
             }
         },
+        components: {
+          StackedProgressBar,
+        },
         methods: {
+            getProgressBarData(carComponentId, attr)
+            {
+                let currentValue = store.state.getCurrentStat(attr);
+                let diffValue = this.compare(carComponentId)[attr];
+                let diffColour = '#05f9b4';
+                if (diffValue < 0) {
+                    diffColour = 'red';
+                    // Minus the diff from the current value to reduce the bar
+                    currentValue = parseInt(currentValue) + parseInt(diffValue);
+                    diffValue = diffValue * -1;
+                }
+
+                return [
+                    { percentage: currentValue, color:'#b8b8b8' },
+                    { percentage: diffValue, color: diffColour },
+                ];
+            },
+
             /**
              * Get whether the current attribute is greater than the current car's assigned component value of that attribute
              * @param carComponentId

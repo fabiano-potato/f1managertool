@@ -24,6 +24,7 @@
         "bootstrap-vue": "^2.11.0",
         "font-awesome": "^4.7.0",
         "sprintf-js": "^1.1.2",
-        "vue": "^2.6.11"
+        "vue": "^2.6.11",
+        "vue-stacked-progress-bar": "^1.0.2"
     }
 }
